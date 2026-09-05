@@ -1,5 +1,5 @@
 <meta charset="utf-8">
-<title>Ask, and the card it makes</title>
+<title>Meeting on desktop</title>
 <style>
 :root{
   color-scheme:dark;
@@ -10,7 +10,9 @@
   --sans:"Public Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
 }
-*{box-sizing:border-box}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+.ask,.arow{touch-action:none;-webkit-user-select:none;user-select:none}
 body{margin:0;background:var(--base-200);color:var(--content);font:13px/1.5 var(--sans);-webkit-font-smoothing:antialiased}
 button{font:inherit;color:inherit;background:none;border:none;padding:0;cursor:pointer;text-align:left}
 :focus-visible{outline:2px solid var(--primary);outline-offset:2px;border-radius:6px}
@@ -18,7 +20,8 @@ button{font:inherit;color:inherit;background:none;border:none;padding:0;cursor:p
 .page{max-width:1180px;margin:0 auto;padding:18px}
 .hdr{display:flex;align-items:baseline;gap:12px;margin-bottom:14px;flex-wrap:wrap}
 .hdr h1{font-size:16px;font-weight:700;margin:0;letter-spacing:-.01em}
-.hdr .sub{font-size:12px;color:var(--muted)}
+.hdr .reset{font-size:11.5px;border:1px solid var(--base-300);border-radius:var(--r-field);padding:5px 11px;color:var(--muted)}
+.hdr .reset:hover{border-color:var(--primary);color:var(--content)}
 .hint{margin-left:auto;font-size:11.5px;color:var(--muted);border:1px solid var(--base-300);border-radius:var(--r-field);padding:5px 10px}
 .hint b{color:var(--content)}
 
@@ -143,13 +146,78 @@ button{font:inherit;color:inherit;background:none;border:none;padding:0;cursor:p
 .reset{margin-top:10px;border:1px solid var(--base-300);border-radius:var(--r-field);padding:6px 12px;font-size:11.5px;font-weight:700}
 .reset:hover{border-color:var(--primary)}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* ---- added: modes, stage contents, explorer, panes, after ---- */
+svg{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.modes{display:flex;gap:2px;background:#0f131b;border:1px solid var(--base-300);border-radius:var(--r-field);padding:2px}
+.modes button{display:flex;align-items:center;gap:6px;padding:5px 10px;border-radius:8px;font-size:11.5px;color:var(--muted);position:relative}
+.modes button svg{width:15px;height:15px;flex:none}
+.modes button[aria-pressed=true]{background:var(--base-300);color:var(--content);font-weight:700}
+.modes .dot{position:absolute;top:2px;right:2px;width:6px;height:6px;border-radius:50%;background:var(--info);animation:pl 1.3s infinite}
+.cbtn{display:inline-flex;align-items:center;gap:6px}
+.cbtn svg{width:15px;height:15px}
+.cbtn:hover{border-color:var(--primary);color:var(--content)}
+.cbtn.on{background:rgba(34,201,224,.12);border-color:rgba(34,201,224,.5);color:var(--content)}
+.cbtn.leave:hover{border-color:var(--error);color:#ffb3b3}
+.stage{position:relative;overflow:hidden;padding:0}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;height:100%;padding:10px}
+.tiles b{background:#12161f;border:1px solid var(--base-300);border-radius:var(--r-field);display:grid;place-items:center;font-size:11px;color:var(--faint);font-weight:500;position:relative}
+.tiles b.spk{border-color:rgba(16,185,129,.5)}
+.tiles b.spk::after{content:"speaking";position:absolute;bottom:7px;font-size:9px;color:var(--success);letter-spacing:.08em;text-transform:uppercase}
+.doc{position:absolute;inset:0;overflow:auto;padding:16px 18px}
+.blk{border-radius:var(--r-field);padding:10px 11px;margin-bottom:9px;border:1px solid transparent}
+.blk .l{height:7px;border-radius:4px;background:#2b3344;margin-bottom:7px}
+.blk .l.m{width:74%}.blk .l.s{width:48%}
+.blk.hot{border-color:rgba(122,162,247,.55);background:linear-gradient(180deg,rgba(122,162,247,.09),transparent);animation:pls 2.6s ease-in-out infinite}
+@keyframes pls{0%,100%{box-shadow:0 0 0 0 rgba(122,162,247,0)}45%{box-shadow:0 0 0 4px rgba(122,162,247,.2)}}
+.jump{position:absolute;left:50%;transform:translateX(-50%);bottom:12px;font-size:11px;background:var(--base-100);
+  border:1px solid rgba(122,162,247,.5);color:var(--info);border-radius:14px;padding:5px 12px;font-weight:700}
+.chip{position:absolute;left:12px;bottom:12px;background:rgba(18,22,31,.94);border:1px solid var(--base-300);
+  border-radius:999px;padding:6px 12px;display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted)}
+.chip .aring{width:16px;height:16px}
+.faces{position:absolute;right:12px;top:12px;bottom:12px;width:96px;display:flex;flex-direction:column;gap:7px}
+.faces b{flex:1;background:#12161f;border:1px solid var(--base-300);border-radius:var(--r-field);display:grid;place-items:center;font-size:10px;color:var(--faint);font-weight:500}
+.expl{position:absolute;left:0;top:0;bottom:0;width:186px;border-right:1px solid var(--base-300);background:#12161f;overflow:auto;padding:8px 6px}
+.expl .cvrow{display:flex;align-items:center;gap:7px;padding:6px 8px;border-radius:8px;font-size:11.5px;color:var(--muted);width:100%}
+.expl .cvrow svg{width:14px;height:14px;flex:none}
+.expl .cvrow.on{background:var(--base-300);color:var(--content);font-weight:600}
+.expl .cvrow:hover{color:var(--content)}
+.expl .cvrow.kid{padding-left:20px}
+.expl .cvrow em{font-style:normal;margin-left:auto;font-size:9px;color:var(--info)}
+.expl .gl{padding:9px 8px 5px;font-size:9px;letter-spacing:.11em;text-transform:uppercase;color:var(--faint)}
+.stage.canvasmode .doc{left:186px}
+.tabs button{display:flex;align-items:center;gap:6px}
+.tabs button svg{width:14px;height:14px}
+.prow{display:flex;align-items:center;gap:9px;padding:6px 0;font-size:12px}
+.prow b{font-weight:600}
+.prow em{font-style:normal;margin-left:auto;font-size:10.5px;color:var(--muted)}
+.prow em.g{color:var(--success)}.prow em.r{color:var(--error)}
+.prow.off{opacity:.5}
+.aring.ok{border-color:rgba(16,185,129,.7)}.aring.bad{border-color:rgba(239,68,68,.7)}
+.thread .ts{font-family:var(--mono);font-size:10px;color:var(--faint);margin-right:7px}
+.thread p.gap{color:#f5b544;font-size:11px;border-top:1px dashed rgba(245,158,11,.4);padding-top:7px}
+.comp .box{width:100%;background:#0f131b;border:1px solid var(--base-300);border-radius:var(--r-field);padding:8px 11px;font:inherit;color:var(--content)}
+.comp .box::placeholder{color:var(--faint)}
+.comp .box:focus{outline:none;border-color:var(--primary)}
+.after-screen{max-width:880px}
+.after-screen h2{font-size:18px;margin:0 0 4px}
+.after-screen .meta{font-size:11.5px;color:var(--muted);margin-bottom:18px}
+.after-screen .cols{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:16px}
+.lbl2{font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);margin-bottom:9px}
+.warnb{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.4);border-radius:var(--r-field);padding:10px 12px;font-size:11.5px;line-height:1.6;color:#f5b544;margin-top:10px}
+.inv{cursor:pointer}
 </style>
 
 <div class="page">
   <div class="hdr">
-    <h1>Ask, and the card it makes</h1>
-    <span class="sub">meeting layout D/E &middot; the interaction, not a picture of it</span>
-    <span class="hint"><b>Hold</b> the Ask button on an agent. Let go after <b>under 2s</b> to see it refused, or <b>hold longer</b> to see it survive.</span>
+    <h1>Meeting</h1>
+    <button class="reset" id="reset">Reset</button>
+    <div class="modes" role="group" aria-label="What the stage shows">
+      <button data-mode="gallery" aria-pressed="true"><svg><use href="#i-grid"/></svg>Gallery</button>
+      <button data-mode="share" aria-pressed="false"><svg><use href="#i-desk"/></svg>Screen</button>
+      <button data-mode="canvas" aria-pressed="false"><svg><use href="#i-pen"/></svg>Canvases<i class="dot" id="cvdot"></i></button>
+    </div>
+    <span class="hint"><b>Hold</b> Ask on an agent</span>
   </div>
 
   <div class="room" id="room">
@@ -167,27 +235,73 @@ button{font:inherit;color:inherit;background:none;border:none;padding:0;cursor:p
     </div>
 
     <div class="mid">
-      <div class="stage">video &middot; gallery</div>
+      <div class="stage" id="stage"></div>
       <div class="ctrls">
-        <span class="cbtn">Mute</span><span class="cbtn">Camera</span><span class="cbtn">Share</span><span class="cbtn leave">Leave</span>
+        <button class="cbtn" data-tog="mic"><svg><use href="#i-mic"/></svg>Mute</button>
+        <button class="cbtn" data-tog="cam"><svg><use href="#i-cam"/></svg>Camera</button>
+        <button class="cbtn" data-mode="share"><svg><use href="#i-desk"/></svg>Share</button>
+        <button class="cbtn leave" id="leave"><svg><use href="#i-door"/></svg>Leave</button>
       </div>
     </div>
 
     <div class="rail r">
-      <div class="tabs"><span class="tab on">Chat</span><span class="tab">Canvas</span><span class="tab">Transcript</span></div>
-      <div class="thread">
+      <div class="tabs">
+        <button class="tab on" data-tab="chat"><svg><use href="#i-chat"/></svg>Chat</button>
+        <button class="tab" data-tab="people"><svg><use href="#i-people"/></svg>People</button>
+        <button class="tab" data-tab="script"><svg><use href="#i-text"/></svg>Transcript</button>
+      </div>
+      <div class="thread" id="thread" data-pane="chat">
         <p><span class="who">Octavius</span> audio plays fine, only the reporting is broken</p>
         <p><span class="who">Jordan</span> ok that's the good version</p>
       </div>
-      <div class="comp"><div class="box">Message the room&hellip;</div></div>
+      <div class="thread" id="people" data-pane="people" hidden>
+        <div class="prow"><span class="aring"></span><b>Jordan</b><em>you</em></div>
+        <div class="prow"><span class="aring"></span><b>Ryan</b><em>sharing</em></div>
+        <div class="prow"><span class="aring ok"></span><b>Octavius</b><em class="g">can hear you</em></div>
+        <div class="prow"><span class="aring ok"></span><b>Saru</b><em class="g">can hear you</em></div>
+        <div class="prow off"><span class="aring bad"></span><b>Brosnan</b><em class="r">no voice worker</em></div>
+      </div>
+      <div class="thread" id="script" data-pane="script" hidden>
+        <p><span class="ts">18:02</span> so the reporting side stops dropping frames</p>
+        <p><span class="ts">18:03</span> file a ticket for the voice bug</p>
+        <p class="gap">2 minutes were not captured</p>
+      </div>
+      <form class="comp" id="comp" data-pane="chat"><input class="box" id="msg" placeholder="Message the room…" autocomplete="off"></form>
     </div>
   </div>
 
-  <div class="after" id="after">
-    <b>What to feel for.</b> While you hold, the card is grey and dashed &mdash; nothing has been judged, so nothing looks decided. Colour is earned after you let go, never during. A refused card comes apart exactly as you described, then lands in <b>Closed</b> carrying its reason, because a card that evaporates takes your words with it.
-    <br><button class="reset" id="reset">Reset the room</button>
-  </div>
+  <section class="after-screen" id="afterscreen" hidden>
+    <h2>Product sync</h2>
+    <div class="meta">42 min &middot; ended 18:40 &middot; 5 in the room</div>
+    <div class="cols">
+      <div>
+        <div class="lbl2">Became tasks</div>
+        <div class="card act"><div class="ttl">File a ticket for the voice bug</div><div class="by">Octavius &middot; created</div></div>
+        <div class="card act"><div class="ttl">Check TURN on the media server</div><div class="by">unassigned</div></div>
+      </div>
+      <div>
+        <div class="lbl2">Considered, not acted on</div>
+        <div class="card dead"><div class="ttl">&ldquo;file a ticket for&hellip;&rdquo;</div><div class="by">Not an action &middot; 1s of speech</div></div>
+        <div class="warnb">2 minutes of speech were not captured. The summary is written from what was recorded.</div>
+      </div>
+    </div>
+    <button class="reset" id="back">Back to the room</button>
+  </section>
 </div>
+
+<svg style="display:none">
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.6"/></symbol>
+  <symbol id="i-desk" viewBox="0 0 24 24"><rect x="2.5" y="4" width="19" height="12.5" rx="2.5"/><path d="M8.5 20.5h7M12 16.5v4"/></symbol>
+  <symbol id="i-pen" viewBox="0 0 24 24"><path d="M11 4H6.5A2.5 2.5 0 0 0 4 6.5v11A2.5 2.5 0 0 0 6.5 20h11a2.5 2.5 0 0 0 2.5-2.5V13"/><path d="M18.6 3.4a2 2 0 0 1 2.8 2.8l-7.6 7.6-3.5.7.7-3.5z"/></symbol>
+  <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9.2" y="2.5" width="5.6" height="11" rx="2.8"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3.5"/></symbol>
+  <symbol id="i-cam" viewBox="0 0 24 24"><rect x="2.5" y="6" width="13" height="12" rx="2"/><path d="M15.5 11l6-3.5v9l-6-3.5z"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5.5h16v10H9l-5 4z"/></symbol>
+  <symbol id="i-people" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.4"/><path d="M2.8 19.5c0-3.4 2.8-5.4 6.2-5.4s6.2 2 6.2 5.4"/><path d="M16.2 5.2a3.4 3.4 0 0 1 0 6.6M17.6 14.6c2.3.5 3.8 2.3 3.8 4.9"/></symbol>
+  <symbol id="i-text" viewBox="0 0 24 24"><path d="M4.5 6.5h15M4.5 12h15M4.5 17.5h9"/></symbol>
+  <symbol id="i-door" viewBox="0 0 24 24"><path d="M14 4H6.5A2.5 2.5 0 0 0 4 6.5v11A2.5 2.5 0 0 0 6.5 20H14"/><path d="M17 8.5l3.5 3.5-3.5 3.5M20 12h-9"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3.5 6.5A1.5 1.5 0 0 1 5 5h4l2 2.5h8A1.5 1.5 0 0 1 20.5 9v8.5A1.5 1.5 0 0 1 19 19H5a1.5 1.5 0 0 1-1.5-1.5z"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M6 3.5h7l5 5v12H6z"/><path d="M13 3.5v5h5"/></symbol>
+</svg>
 
 <script>
 "use strict";
@@ -382,7 +496,7 @@ function undo(id){
 function wireAsk(){
   document.querySelectorAll("[data-ask]").forEach(function(btn){
     var a = AGENTS.filter(function(x){ return x.id === btn.dataset.ask; })[0];
-    btn.addEventListener("pointerdown", function(e){ e.preventDefault(); btn.setPointerCapture(e.pointerId); beginAsk(a, btn); });
+    btn.addEventListener("pointerdown", function(e){ e.preventDefault(); try{ btn.setPointerCapture(e.pointerId); }catch(err){} beginAsk(a, btn); });
     btn.addEventListener("pointerup", endAsk);
     btn.addEventListener("pointercancel", endAsk);
     btn.addEventListener("keydown", function(e){ if ((e.key === " " || e.key === "Enter") && !held){ e.preventDefault(); beginAsk(a, btn);} });
@@ -404,4 +518,94 @@ function seed(){
 renderAgents();
 cards = seed();
 paint();
+
+/* ---------- added: stage modes, canvas explorer, tabs, controls, leave ---------- */
+var CANVASES = [
+  {g:"This meeting", items:[
+    {n:"Product sync notes", live:true},
+    {n:"Voice bug triage"}
+  ]},
+  {g:"Recent", items:[
+    {n:"Meetings redesign"},
+    {n:"Ask, and the card it makes"},
+    {n:"SBS phase 1 approval"}
+  ]}
+];
+var openCanvas = "Product sync notes";
+
+function galleryHTML(){
+  return '<div class="tiles"><b>Jordan</b><b class="spk">Ryan</b><b>Octavius</b><b>Saru</b></div>';
+}
+function shareHTML(){
+  return '<div class="doc" style="right:120px">'+
+    '<div class="blk"><div class="l"></div><div class="l m"></div><div class="l s"></div></div>'+
+    '<div class="blk"><div class="l m"></div><div class="l"></div></div>'+
+    '<div class="blk"><div class="l"></div><div class="l s"></div></div>'+
+  '</div>'+
+  '<div class="faces"><b>Jordan</b><b>Ryan</b><b>Octavius</b></div>'+
+  '<div class="chip"><span class="aring"></span>Ryan is sharing a screen</div>';
+}
+function canvasHTML(){
+  var rows = CANVASES.map(function(g){
+    return '<div class="gl">'+esc(g.g)+'</div>'+ g.items.map(function(it){
+      return '<button class="cvrow kid'+(it.n===openCanvas?' on':'')+'" data-cv="'+esc(it.n)+'">'+
+        '<svg><use href="#i-doc"/></svg>'+esc(it.n)+ (it.live?'<em>live</em>':'') +'</button>';
+    }).join("");
+  }).join("");
+  return '<div class="expl"><button class="cvrow"><svg><use href="#i-folder"/></svg>All canvases</button>'+rows+'</div>'+
+    '<div class="doc">'+
+      '<div class="blk"><div class="l"></div><div class="l m"></div></div>'+
+      '<div class="blk hot"><div class="l m"></div><div class="l s"></div></div>'+
+      '<div class="blk"><div class="l"></div><div class="l s"></div></div>'+
+      '<div class="blk"><div class="l m"></div><div class="l"></div></div>'+
+    '</div>'+
+    '<button class="jump">Octavius is writing &middot; jump to it</button>';
+}
+function setMode(m){
+  document.querySelectorAll(".modes button").forEach(function(b){
+    b.setAttribute("aria-pressed", String(b.dataset.mode === m));
+  });
+  var st = document.getElementById("stage");
+  st.classList.toggle("canvasmode", m === "canvas");
+  st.innerHTML = m === "gallery" ? galleryHTML() : (m === "share" ? shareHTML() : canvasHTML());
+  var d = document.getElementById("cvdot");
+  if (d && m === "canvas") d.style.display = "none";
+}
+function setTab(t){
+  document.querySelectorAll(".tabs .tab").forEach(function(b){ b.classList.toggle("on", b.dataset.tab === t); });
+  document.querySelectorAll("[data-pane]").forEach(function(el){ el.hidden = el.dataset.pane !== t; });
+}
+function showAfter(on){
+  document.getElementById("room").hidden = on;
+  document.querySelector(".ctrls") && (document.querySelector(".ctrls").hidden = false);
+  document.getElementById("afterscreen").hidden = !on;
+  document.querySelector(".modes").hidden = on;
+  document.querySelector(".hint").hidden = on;
+}
+
+document.addEventListener("click", function(e){
+  var m = e.target.closest("[data-mode]");
+  if (m){ setMode(m.dataset.mode); return; }
+  var cv = e.target.closest("[data-cv]");
+  if (cv){ openCanvas = cv.dataset.cv; setMode("canvas"); return; }
+  var t = e.target.closest("[data-tab]");
+  if (t){ setTab(t.dataset.tab); return; }
+  var tg = e.target.closest("[data-tog]");
+  if (tg){ tg.classList.toggle("on"); return; }
+  if (e.target.closest("#leave")){ showAfter(true); return; }
+  if (e.target.id === "back"){ showAfter(false); setMode("gallery"); return; }
+  if (e.target.closest(".inv")){ setTab("people"); return; }
+});
+document.getElementById("comp").addEventListener("submit", function(e){
+  e.preventDefault();
+  var i = document.getElementById("msg");
+  if (!i.value.trim()) return;
+  var th = document.getElementById("thread");
+  th.appendChild(el('<p><span class="who">Jordan</span>'+esc(i.value.trim())+'</p>'));
+  th.scrollTop = th.scrollHeight;
+  i.value = "";
+});
+
+setMode("gallery");
+setTab("chat");
 </script>
