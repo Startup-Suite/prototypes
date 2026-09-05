@@ -186,8 +186,24 @@ svg{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-l
 .expl .cvrow em{font-style:normal;margin-left:auto;font-size:9px;color:var(--info)}
 .expl .gl{padding:9px 8px 5px;font-size:9px;letter-spacing:.11em;text-transform:uppercase;color:var(--faint)}
 .stage.canvasmode .doc{left:186px}
-.tabs button{display:flex;align-items:center;gap:6px}
-.tabs button svg{width:14px;height:14px}
+.tabs button{display:flex;align-items:center;justify-content:center;gap:6px}
+.tabs button svg{width:14px;height:14px;flex:none}
+.rail.r{transition:width .28s cubic-bezier(.4,0,.2,1)}
+.rail.r .tabs{align-items:stretch}
+.rtog{flex:none;width:30px;display:grid;place-items:center;color:var(--muted);border-left:1px solid var(--base-300)}
+.rtog:hover{color:var(--content)}
+.rtog svg{width:14px;height:14px;transition:transform .28s}
+.rail.r.min{width:44px}
+.rail.r.min .tabs{flex-direction:column;border-bottom:none;padding:4px 4px 0}
+.rail.r.min .tab{border-bottom:none;border-radius:8px;padding:9px 0;margin-bottom:2px}
+.rail.r.min .tab.on{background:var(--base-300)}
+.rail.r.min .tl{display:none}
+.rail.r.min .rtog{order:-1;width:auto;border-left:none;border-bottom:1px solid var(--base-300);padding:6px 0 9px;margin-bottom:5px}
+.rail.r.min .rtog svg{transform:rotate(180deg)}
+.rail.r.min .thread,.rail.r.min .comp{display:none}
+.tab .un{width:5px;height:5px;border-radius:50%;background:var(--info);flex:none;animation:pl 1.4s infinite}
+.rail.r.min .tab{position:relative}
+.rail.r.min .tab .un{position:absolute;top:6px;right:6px}
 .prow{display:flex;align-items:center;gap:9px;padding:6px 0;font-size:12px}
 .prow b{font-weight:600}
 .prow em{font-style:normal;margin-left:auto;font-size:10.5px;color:var(--muted)}
@@ -256,11 +272,12 @@ svg{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-l
       </div>
     </div>
 
-    <div class="rail r">
+    <div class="rail r" id="rrail">
       <div class="tabs">
-        <button class="tab on" data-tab="chat"><svg><use href="#i-chat"/></svg>Chat</button>
-        <button class="tab" data-tab="people"><svg><use href="#i-people"/></svg>People</button>
-        <button class="tab" data-tab="script"><svg><use href="#i-text"/></svg>Transcript</button>
+        <button class="tab on" data-tab="chat"><svg><use href="#i-chat"/></svg><span class="tl">Chat</span></button>
+        <button class="tab" data-tab="people"><svg><use href="#i-people"/></svg><span class="tl">People</span></button>
+        <button class="tab" data-tab="script"><svg><use href="#i-text"/></svg><span class="tl">Transcript</span></button>
+        <button class="rtog" id="rtog" aria-label="Collapse the panel" aria-expanded="true"><svg><use href="#i-chev"/></svg></button>
       </div>
       <div class="thread" id="thread" data-pane="chat">
         <p><span class="who">Octavius</span> audio plays fine, only the reporting is broken</p>
@@ -315,6 +332,7 @@ svg{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-l
   <symbol id="i-people" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.4"/><path d="M2.8 19.5c0-3.4 2.8-5.4 6.2-5.4s6.2 2 6.2 5.4"/><path d="M16.2 5.2a3.4 3.4 0 0 1 0 6.6M17.6 14.6c2.3.5 3.8 2.3 3.8 4.9"/></symbol>
   <symbol id="i-text" viewBox="0 0 24 24"><path d="M4.5 6.5h15M4.5 12h15M4.5 17.5h9"/></symbol>
   <symbol id="i-door" viewBox="0 0 24 24"><path d="M14 4H6.5A2.5 2.5 0 0 0 4 6.5v11A2.5 2.5 0 0 0 6.5 20H14"/><path d="M17 8.5l3.5 3.5-3.5 3.5M20 12h-9"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M14.5 5.5L8 12l6.5 6.5"/></symbol>
   <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3.5 6.5A1.5 1.5 0 0 1 5 5h4l2 2.5h8A1.5 1.5 0 0 1 20.5 9v8.5A1.5 1.5 0 0 1 19 19H5a1.5 1.5 0 0 1-1.5-1.5z"/></symbol>
   <symbol id="i-doc" viewBox="0 0 24 24"><path d="M6 3.5h7l5 5v12H6z"/><path d="M13 3.5v5h5"/></symbol>
 </svg>
@@ -603,6 +621,7 @@ function setMode(m){
     b.setAttribute("aria-pressed", String(b.dataset.mode === m));
   });
   var st = document.getElementById("stage");
+  setRail(RAIL_DEFAULT[m]);
   st.classList.toggle("canvasmode", m === "canvas");
   st.innerHTML = m === "gallery" ? galleryHTML() : (m === "share" ? shareHTML() : canvasHTML());
   var d = document.getElementById("cvdot");
@@ -611,6 +630,13 @@ function setMode(m){
 function setTab(t){
   document.querySelectorAll(".tabs .tab").forEach(function(b){ b.classList.toggle("on", b.dataset.tab === t); });
   document.querySelectorAll("[data-pane]").forEach(function(el){ el.hidden = el.dataset.pane !== t; });
+}
+var RAIL_DEFAULT = { gallery:false, share:true, canvas:true };
+function setRail(min){
+  var r = document.getElementById("rrail"), t = document.getElementById("rtog");
+  r.classList.toggle("min", min);
+  t.setAttribute("aria-expanded", String(!min));
+  t.setAttribute("aria-label", min ? "Open the panel" : "Collapse the panel");
 }
 function showAfter(on){
   document.getElementById("room").hidden = on;
@@ -625,8 +651,9 @@ document.addEventListener("click", function(e){
   if (m){ setMode(m.dataset.mode); return; }
   var cv = e.target.closest("[data-cv]");
   if (cv){ openCanvas = cv.dataset.cv; setMode("canvas"); return; }
+  if (e.target.closest("#rtog")){ setRail(!document.getElementById("rrail").classList.contains("min")); return; }
   var t = e.target.closest("[data-tab]");
-  if (t){ setTab(t.dataset.tab); return; }
+  if (t){ setTab(t.dataset.tab); setRail(false); if (t.dataset.tab === "chat") unread(false); return; }
   var tg = e.target.closest("[data-tog]");
   if (tg){
     var k = tg.dataset.tog, off = !tg.classList.contains("off");
@@ -642,6 +669,18 @@ document.addEventListener("click", function(e){
   if (e.target.id === "back"){ showAfter(false); setMode("gallery"); return; }
   if (e.target.closest(".inv")){ setTab("people"); return; }
 });
+function unread(on){
+  var tab = document.querySelector('[data-tab="chat"]'), dot = tab.querySelector(".un");
+  if (on && !dot) tab.appendChild(el('<i class="un"></i>'));
+  if (!on && dot) dot.remove();
+}
+function reply(text){
+  var th = document.getElementById("thread");
+  th.appendChild(el('<p><span class="who">Octavius</span>'+esc(text)+'</p>'));
+  th.scrollTop = th.scrollHeight;
+  var r = document.getElementById("rrail");
+  if (r.classList.contains("min") || document.getElementById("thread").hidden) unread(true);
+}
 document.getElementById("comp").addEventListener("submit", function(e){
   e.preventDefault();
   var i = document.getElementById("msg");
@@ -650,6 +689,7 @@ document.getElementById("comp").addEventListener("submit", function(e){
   th.appendChild(el('<p><span class="who">Jordan</span>'+esc(i.value.trim())+'</p>'));
   th.scrollTop = th.scrollHeight;
   i.value = "";
+  later(function(){ reply("on it, I will put that in the notes"); }, 2200);
 });
 
 setMode("gallery");
