@@ -161,9 +161,23 @@ svg{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-l
 .cbtn.leave:hover{border-color:var(--error);color:#ffb3b3}
 .stage{position:relative;overflow:hidden;padding:0}
 .tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;height:100%;padding:10px}
-.tiles b{background:#12161f;border:1px solid var(--base-300);border-radius:var(--r-field);display:grid;place-items:center;font-size:11px;color:var(--faint);font-weight:500;position:relative}
+.tiles b{background:#12161f;border:1px solid var(--base-300);border-radius:var(--r-field);display:grid;place-items:center;font-size:11px;color:var(--faint);font-weight:500;position:relative;overflow:hidden}
 .tiles b.spk{border-color:rgba(16,185,129,.5)}
-.tiles b.spk::after{content:"speaking";position:absolute;bottom:7px;font-size:9px;color:var(--success);letter-spacing:.08em;text-transform:uppercase}
+.tiles b.spk::after{content:"speaking";position:absolute;bottom:8px;right:10px;font-size:9px;color:var(--success);letter-spacing:.08em;text-transform:uppercase}
+.tiles b.dark{background:#0b0e14}
+.tiles b .nm2{font-size:11.5px;color:rgba(242,243,245,.72);font-weight:600}
+.badges{position:absolute;bottom:7px;left:8px;display:flex;gap:5px}
+.badges i{width:20px;height:20px;border-radius:50%;background:rgba(239,68,68,.9);display:grid;place-items:center}
+.badges i svg{width:12px;height:12px;stroke:#fff;stroke-width:2}
+.avst{display:flex;gap:5px;align-items:center;flex:none}
+.avst i{width:21px;height:21px;border-radius:6px;display:grid;place-items:center;background:#1b2130}
+.avst i svg{width:12px;height:12px;stroke:var(--faint)}
+.avst i.off{background:rgba(239,68,68,.16)}
+.avst i.off svg{stroke:#ff9b9b}
+.avst i.good svg{stroke:var(--success)}
+.avst i.na{opacity:.28}
+.prow em{margin-left:0}
+.prow .sp{margin-left:auto}
 .doc{position:absolute;inset:0;overflow:auto;padding:16px 18px}
 .blk{border-radius:var(--r-field);padding:10px 11px;margin-bottom:9px;border:1px solid transparent}
 .blk .l{height:7px;border-radius:4px;background:#2b3344;margin-bottom:7px}
@@ -283,13 +297,7 @@ svg{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-l
         <p><span class="who">Octavius</span> audio plays fine, only the reporting is broken</p>
         <p><span class="who">Jordan</span> ok that's the good version</p>
       </div>
-      <div class="thread" id="people" data-pane="people" hidden>
-        <div class="prow"><span class="aring"></span><b>Jordan</b><em>you</em></div>
-        <div class="prow"><span class="aring"></span><b>Ryan</b><em>sharing</em></div>
-        <div class="prow"><span class="aring ok"></span><b>Octavius</b><em class="g">can hear you</em></div>
-        <div class="prow"><span class="aring ok"></span><b>Saru</b><em class="g">can hear you</em></div>
-        <div class="prow off"><span class="aring bad"></span><b>Brosnan</b><em class="r">no voice worker</em></div>
-      </div>
+      <div class="thread" id="people" data-pane="people" hidden></div>
       <div class="thread" id="script" data-pane="script" hidden>
         <p><span class="ts">18:02</span> so the reporting side stops dropping frames</p>
         <p><span class="ts">18:03</span> file a ticket for the voice bug</p>
@@ -574,6 +582,51 @@ cards = seed();
 paint();
 
 /* ---------- added: stage modes, canvas explorer, tabs, controls, leave ---------- */
+var PEOPLE = [
+  {id:"you", n:"Jordan",   kind:"human", you:true},
+  {id:"ry",  n:"Ryan",     kind:"human", mic:true,  cam:true, speaking:true, sharing:true},
+  {id:"ma",  n:"Mariah",   kind:"human", mic:false, cam:true},
+  {id:"ka",  n:"Katie",    kind:"human", mic:true,  cam:false},
+  {id:"oct", n:"Octavius", kind:"agent", voice:true},
+  {id:"sar", n:"Saru",     kind:"agent", voice:true},
+  {id:"bro", n:"Brosnan",  kind:"agent", voice:false}
+];
+var me = {mic:true, cam:true};
+function av(p){ return p.you ? {mic:me.mic, cam:me.cam} : {mic:p.mic, cam:p.cam}; }
+function ic(id){ return '<svg><use href="#i-'+id+'"/></svg>'; }
+
+function tileHTML(p){
+  var st = av(p), cls = (p.speaking && st.mic ? " spk" : "") + (st.cam ? "" : " dark");
+  var badges = [];
+  if (!st.mic) badges.push('<i title="muted">'+ic("mic-off")+'</i>');
+  if (!st.cam) badges.push('<i title="camera off">'+ic("cam-off")+'</i>');
+  var label = esc(p.n) + (p.you ? " (you)" : "");
+  return '<b class="'+cls.trim()+'">' +
+    (st.cam ? label : '<span class="nm2">'+label+'</span>') +
+    (badges.length ? '<span class="badges">'+badges.join("")+'</span>' : "") +
+  '</b>';
+}
+function avHTML(p){
+  if (p.kind === "agent"){
+    return '<span class="avst">'+
+      '<i class="'+(p.voice ? "good" : "off")+'" title="'+(p.voice ? "can hear you" : "no voice worker")+'">'+ic(p.voice ? "mic" : "mic-off")+'</i>'+
+      '<i class="na" title="agents have no camera">'+ic("cam-off")+'</i></span>';
+  }
+  var st = av(p);
+  return '<span class="avst">'+
+    '<i class="'+(st.mic ? "" : "off")+'" title="'+(st.mic ? "unmuted" : "muted")+'">'+ic(st.mic ? "mic" : "mic-off")+'</i>'+
+    '<i class="'+(st.cam ? "" : "off")+'" title="'+(st.cam ? "camera on" : "camera off")+'">'+ic(st.cam ? "cam" : "cam-off")+'</i></span>';
+}
+function drawPeople(){
+  document.getElementById("people").innerHTML = PEOPLE.map(function(p){
+    var tag = p.you ? "you" : (p.sharing ? "sharing" : (p.kind === "agent" ? (p.voice ? "can hear you" : "no voice worker") : ""));
+    var cls = p.kind === "agent" && !p.voice ? " off" : "";
+    var ring = p.kind === "agent" ? (p.voice ? " ok" : " bad") : "";
+    return '<div class="prow'+cls+'"><span class="aring'+ring+'"></span><b>'+esc(p.n)+'</b>'+
+      (tag ? '<em class="sp'+(p.kind==="agent" ? (p.voice ? " g" : " r") : "")+'">'+tag+'</em>' : '<span class="sp"></span>')+
+      avHTML(p)+'</div>';
+  }).join("");
+}
 var CANVASES = [
   {g:"This meeting", items:[
     {n:"Product sync notes", live:true},
@@ -588,8 +641,7 @@ var CANVASES = [
 var openCanvas = "Product sync notes";
 
 function galleryHTML(){
-  var camOff = document.querySelector('[data-tog="cam"]') && document.querySelector('[data-tog="cam"]').classList.contains("off");
-  return '<div class="tiles"><b data-me>Jordan'+(camOff?' &middot; camera off':'')+'</b><b class="spk">Ryan</b><b>Octavius</b><b>Saru</b></div>';
+  return '<div class="tiles">' + PEOPLE.filter(function(p){ return p.kind === "human"; }).map(tileHTML).join("") + '</div>';
 }
 function shareHTML(){
   return '<div class="doc" style="right:120px">'+
@@ -657,12 +709,13 @@ document.addEventListener("click", function(e){
   var tg = e.target.closest("[data-tog]");
   if (tg){
     var k = tg.dataset.tog, off = !tg.classList.contains("off");
+    me[k] = !off;
     tg.classList.toggle("off", off);
     tg.setAttribute("aria-pressed", String(off));
     tg.querySelector("use").setAttribute("href", "#i-" + k + (off ? "-off" : ""));
     tg.querySelector("span").textContent = k === "mic" ? (off ? "Muted" : "Mute") : (off ? "Camera off" : "Camera");
-    var t = document.querySelector("#stage .tiles b[data-me]");
-    if (t && k === "cam") t.textContent = off ? "Jordan · camera off" : "Jordan";
+    if (document.querySelector("#stage .tiles")) document.getElementById("stage").innerHTML = galleryHTML();
+    drawPeople();
     return;
   }
   if (e.target.closest("#leave")){ showAfter(true); return; }
@@ -692,6 +745,7 @@ document.getElementById("comp").addEventListener("submit", function(e){
   later(function(){ reply("on it, I will put that in the notes"); }, 2200);
 });
 
+drawPeople();
 setMode("gallery");
 setTab("chat");
 </script>
