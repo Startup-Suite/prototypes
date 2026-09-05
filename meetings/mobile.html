@@ -1,4 +1,5 @@
 <meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap">
 <title>Meeting on a phone</title>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
 <style>
@@ -16,7 +17,7 @@ button{font:inherit;color:inherit;background:none;border:none;padding:0;cursor:p
 .scr{position:absolute;inset:0;display:none;flex-direction:column;padding:16px 14px}
 .scr.on{display:flex}
 .h1{font-size:22px;font-weight:800;margin:6px 0 2px}
-.build{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:9.5px;color:var(--fnt);margin-bottom:12px}
+.build{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-size:9.5px;color:var(--fnt);margin-bottom:12px}
 .seg{display:flex;gap:3px;background:#0f131b;border:1px solid var(--b3);border-radius:11px;padding:3px;margin-bottom:14px}
 .seg button{flex:1;text-align:center;font-size:12px;padding:7px 0;border-radius:8px;color:var(--mut)}
 .seg button[aria-pressed=true]{background:var(--b3);color:var(--fg);font-weight:700}
@@ -123,7 +124,7 @@ button{font:inherit;color:inherit;background:none;border:none;padding:0;cursor:p
 .cdbar i{display:block;height:100%;background:var(--info);transition:width .25s linear}
 .card.last .cdbar i{background:var(--warn)}
 .cdrow{display:flex;align-items:center;gap:7px}
-.cdn{flex:1;font-size:11px;color:var(--mut);font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.cdn{flex:1;font-size:11px;color:var(--mut);font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
 .cdn b{color:var(--fg)}
 .card.last .cdn,.card.last .cdn b{color:#f5b544}
 .cdb{width:30px;height:30px;border-radius:8px;border:1px solid var(--b3);display:grid;place-items:center;color:var(--mut);flex:none}
@@ -219,7 +220,7 @@ button{font:inherit;color:inherit;background:none;border:none;padding:0;cursor:p
   <!-- INDEX -->
   <section class="scr on" data-s="index">
     <div class="h1">Meetings</div>
-    <div class="build" data-build>build 2026-09-05 17:34 UTC</div>
+    <div class="build" data-build>build 2026-09-05 20:47 UTC</div>
     <div class="seg"><button aria-pressed="true">Upcoming</button><button aria-pressed="false">Past</button></div>
     <button class="mr live" data-go="lobby">
       <div class="mt">NOW</div><div class="mn">Product sync</div>
