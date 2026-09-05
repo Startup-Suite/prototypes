@@ -162,13 +162,18 @@ svg{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-l
 .stage{position:relative;overflow:hidden;padding:0}
 .tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;height:100%;padding:10px}
 .tiles b{background:#12161f;border:1px solid var(--base-300);border-radius:var(--r-field);display:grid;place-items:center;font-size:11px;color:var(--faint);font-weight:500;position:relative;overflow:hidden}
-.tiles b.spk{border-color:rgba(16,185,129,.5)}
-.tiles b.spk::after{content:"speaking";position:absolute;bottom:8px;right:10px;font-size:9px;color:var(--success);letter-spacing:.08em;text-transform:uppercase}
+.tiles b.spk{border-color:rgba(16,185,129,.55)}
 .tiles b.dark{background:#0b0e14}
-.tiles b .nm2{font-size:11.5px;color:rgba(242,243,245,.72);font-weight:600}
-.badges{position:absolute;bottom:7px;left:8px;display:flex;gap:5px}
-.badges i{width:20px;height:20px;border-radius:50%;background:rgba(239,68,68,.9);display:grid;place-items:center}
-.badges i svg{width:12px;height:12px;stroke:#fff;stroke-width:2}
+.plate{width:58px;height:58px;border-radius:50%;background:#1b2130;display:grid;place-items:center;
+  font-size:19px;font-weight:700;color:rgba(242,243,245,.6)}
+.nb{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;gap:6px;
+  padding:18px 10px 8px;background:linear-gradient(transparent,rgba(5,7,10,.85));font-size:11px}
+.nbn{flex:1;min-width:0;font-weight:600;color:rgba(242,243,245,.92);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tiles b.spk .nbn{color:var(--success)}
+.mi{width:18px;height:18px;flex:none;display:grid;place-items:center;border-radius:5px}
+.mi svg{width:13px;height:13px;stroke:rgba(242,243,245,.6);stroke-width:1.9}
+.mi.off{background:rgba(239,68,68,.85)}
+.mi.off svg{stroke:#fff;stroke-width:2.1}
 .avst{display:flex;gap:5px;align-items:center;flex:none}
 .avst i{width:21px;height:21px;border-radius:6px;display:grid;place-items:center;background:#1b2130}
 .avst i svg{width:12px;height:12px;stroke:var(--faint)}
@@ -254,7 +259,7 @@ svg{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-l
   <div class="hdr">
     <h1>Meeting</h1>
     <button class="reset" id="reset">Reset</button>
-    <span class="build" data-build>build 2026-09-05 16:45 UTC</span>
+    <span class="build" data-build>build 2026-09-05 16:50 UTC</span>
     <div class="modes" role="group" aria-label="What the stage shows">
       <button data-mode="gallery" aria-pressed="true"><svg><use href="#i-grid"/></svg>Gallery</button>
       <button data-mode="share" aria-pressed="false"><svg><use href="#i-desk"/></svg>Screen</button>
@@ -599,13 +604,14 @@ function ic(id){ return '<svg><use href="#i-'+id+'"/></svg>'; }
 
 function tileHTML(p){
   var st = av(p), cls = (p.speaking && st.mic ? " spk" : "") + (st.cam ? "" : " dark");
-  var badges = [];
-  if (!st.mic) badges.push('<i title="muted">'+ic("mic-off")+'</i>');
-  if (!st.cam) badges.push('<i title="camera off">'+ic("cam-off")+'</i>');
   var label = esc(p.n) + (p.you ? " (you)" : "");
+  /* mic shows in both states: an unmuted mic is invisible otherwise.
+     camera shows only when off, because a dark tile already says it. */
+  var icons = '<i class="mi'+(st.mic ? "" : " off")+'" title="'+(st.mic ? "unmuted" : "muted")+'">'+ic(st.mic ? "mic" : "mic-off")+'</i>';
+  if (!st.cam) icons += '<i class="mi off" title="camera off">'+ic("cam-off")+'</i>';
   return '<b class="'+cls.trim()+'">' +
-    (st.cam ? label : '<span class="nm2">'+label+'</span>') +
-    (badges.length ? '<span class="badges">'+badges.join("")+'</span>' : "") +
+    (st.cam ? "" : '<span class="plate">'+esc(p.n.charAt(0))+'</span>') +
+    '<span class="nb"><span class="nbn">'+label+'</span>'+icons+'</span>' +
   '</b>';
 }
 function avHTML(p){
