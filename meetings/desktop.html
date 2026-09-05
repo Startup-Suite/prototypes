@@ -233,7 +233,23 @@ svg{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-l
 .nores{padding:16px 10px;font-size:11px;line-height:1.6;color:var(--muted)}
 .nores b{color:var(--content)}
 .nores span{display:block;margin-top:7px;color:var(--faint);font-size:10.5px}
-.stage.canvasmode .doc{left:238px}
+.stage.canvasmode .doc{left:238px;transition:left .28s cubic-bezier(.4,0,.2,1)}
+.expl{transition:width .28s cubic-bezier(.4,0,.2,1)}
+.expl.min{width:44px}
+.stage.canvasmode.explmin .doc{left:44px}
+.expl.min .find,.expl.min .list,.expl.min .foot{display:none}
+.expl .strip2{display:none;flex-direction:column;align-items:center;gap:4px;padding:7px 0}
+.expl.min .strip2{display:flex}
+.expl .strip2 button{width:32px;height:32px;border-radius:8px;display:grid;place-items:center;color:var(--muted);position:relative}
+.expl .strip2 button:hover{color:var(--content);background:rgba(255,255,255,.04)}
+.expl .strip2 svg{width:15px;height:15px}
+.expl .strip2 .n2{font-family:var(--mono);font-size:8.5px;color:var(--faint);margin-top:2px;letter-spacing:-.02em}
+.expl .strip2 .qmark{position:absolute;top:4px;right:4px;width:5px;height:5px;border-radius:50%;background:var(--primary)}
+.expltog{flex:none;display:flex;align-items:center;justify-content:flex-end;padding:6px 8px 0}
+.expltog button{color:var(--faint);padding:3px}
+.expltog button:hover{color:var(--content)}
+.expltog svg{width:13px;height:13px}
+.expl.min .expltog{display:none}
 .tabs button{display:flex;align-items:center;justify-content:center;gap:6px}
 .tabs button svg{width:14px;height:14px;flex:none}
 .rail.r{transition:width .28s cubic-bezier(.4,0,.2,1)}
@@ -288,7 +304,7 @@ svg{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-l
   <div class="hdr">
     <h1>Meeting</h1>
     <button class="reset" id="reset">Reset</button>
-    <span class="build" data-build>build 2026-09-05 17:05 UTC</span>
+    <span class="build" data-build>build 2026-09-05 17:11 UTC</span>
     <div class="modes" role="group" aria-label="What the stage shows">
       <button data-mode="gallery" aria-pressed="true"><svg><use href="#i-grid"/></svg>Gallery</button>
       <button data-mode="share" aria-pressed="false"><svg><use href="#i-desk"/></svg>Screen</button>
@@ -376,6 +392,7 @@ svg{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-l
   <symbol id="i-people" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.4"/><path d="M2.8 19.5c0-3.4 2.8-5.4 6.2-5.4s6.2 2 6.2 5.4"/><path d="M16.2 5.2a3.4 3.4 0 0 1 0 6.6M17.6 14.6c2.3.5 3.8 2.3 3.8 4.9"/></symbol>
   <symbol id="i-text" viewBox="0 0 24 24"><path d="M4.5 6.5h15M4.5 12h15M4.5 17.5h9"/></symbol>
   <symbol id="i-door" viewBox="0 0 24 24"><path d="M14 4H6.5A2.5 2.5 0 0 0 4 6.5v11A2.5 2.5 0 0 0 6.5 20H14"/><path d="M17 8.5l3.5 3.5-3.5 3.5M20 12h-9"/></symbol>
+  <symbol id="i-find" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.4 15.4L20.5 20.5"/></symbol>
   <symbol id="i-chev" viewBox="0 0 24 24"><path d="M14.5 5.5L8 12l6.5 6.5"/></symbol>
   <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3.5 6.5A1.5 1.5 0 0 1 5 5h4l2 2.5h8A1.5 1.5 0 0 1 20.5 9v8.5A1.5 1.5 0 0 1 19 19H5a1.5 1.5 0 0 1-1.5-1.5z"/></symbol>
   <symbol id="i-doc" viewBox="0 0 24 24"><path d="M6 3.5h7l5 5v12H6z"/><path d="M13 3.5v5h5"/></symbol>
@@ -758,7 +775,7 @@ function shareHTML(){
   '<div class="faces"><b>Jordan</b><b>Ryan</b><b>Octavius</b></div>'+
   '<div class="chip"><span class="aring"></span>Ryan is sharing a screen</div>';
 }
-var query = "", openGroups = {}, shown = {}, PAGE = 12;
+var query = "", openGroups = {}, shown = {}, PAGE = 12, explMin = true;
 
 function hi(text, q){
   var t = esc(text);
@@ -812,7 +829,14 @@ function canvasHTML(){
     ? pool.length + " of " + CANVASES.length + " match"
     : CANVASES.length + " canvases across " + SPACES.length + " spaces";
 
-  return '<div class="expl">'+
+  return '<div class="expl'+(explMin ? " min" : "")+'" id="expl">'+
+      '<div class="strip2">'+
+        '<button id="explopen" aria-label="Open the canvas list" title="Canvases"><svg><use href="#i-folder"/></svg></button>'+
+        '<span class="n2">'+CANVASES.length+'</span>'+
+        '<button id="explfind" aria-label="Search canvases" title="Search canvases"><svg><use href="#i-find"/></svg>'+
+          (query.trim() ? '<i class="qmark"></i>' : "")+'</button>'+
+      '</div>'+
+      '<div class="expltog"><button id="explshut" aria-label="Collapse the canvas list"><svg style="transform:rotate(180deg)"><use href="#i-chev"/></svg></button></div>'+
       '<div class="find"><input id="cvq" placeholder="Search titles…" value="'+esc(query)+'" autocomplete="off">'+
         (query ? '<button class="clr" id="cvclr" aria-label="Clear the search">&times;</button>' : "")+
       '</div>'+
@@ -832,6 +856,7 @@ function redrawExplorer(keepFocus){
   var top = list ? list.scrollTop : 0;
   var st = document.getElementById("stage");
   st.innerHTML = canvasHTML();
+  st.classList.toggle("explmin", explMin);
   var l2 = document.getElementById("cvlist");
   if (l2) l2.scrollTop = top;
   if (keepFocus){
@@ -850,6 +875,7 @@ function setMode(m){
   }
   setRail(RAIL_DEFAULT[m]);
   st.classList.toggle("canvasmode", m === "canvas");
+  st.classList.toggle("explmin", m === "canvas" && explMin);
   st.innerHTML = m === "gallery" ? galleryHTML() : (m === "share" ? shareHTML() : canvasHTML());
   var d = document.getElementById("cvdot");
   if (d && m === "canvas") d.style.display = "none";
@@ -888,6 +914,9 @@ document.addEventListener("click", function(e){
   var mo = e.target.closest("[data-more]");
   if (mo){ var k2 = mo.dataset.more; shown[k2] = (shown[k2] || PAGE) + 25; redrawExplorer(false); return; }
   if (e.target.closest("#cvclr")){ query = ""; redrawExplorer(true); return; }
+  if (e.target.closest("#explshut")){ explMin = true; redrawExplorer(false); return; }
+  if (e.target.closest("#explopen")){ explMin = false; redrawExplorer(false); return; }
+  if (e.target.closest("#explfind")){ explMin = false; redrawExplorer(true); return; }
   if (e.target.closest("#rtog")){ setRail(!document.getElementById("rrail").classList.contains("min")); return; }
   var t = e.target.closest("[data-tab]");
   if (t){ setTab(t.dataset.tab); setRail(false); if (t.dataset.tab === "chat") unread(false); return; }
