@@ -236,6 +236,7 @@ svg{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-l
 .lbl2{font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);margin-bottom:9px}
 .warnb{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.4);border-radius:var(--r-field);padding:10px 12px;font-size:11.5px;line-height:1.6;color:#f5b544;margin-top:10px}
 .inv{cursor:pointer}
+.build{font-family:var(--mono);font-size:9.5px;color:var(--faint);letter-spacing:.02em;align-self:center}
 .holdhint{padding:0 12px 8px;font-size:10.5px;color:var(--muted);display:flex;align-items:flex-start;gap:6px;line-height:1.45;transition:opacity .4s,height .4s,padding .4s;overflow:hidden}
 .holdhint svg{width:12px;height:12px;flex:none;margin-top:2px}
 .holdhint b{color:var(--content)}
@@ -253,6 +254,7 @@ svg{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-l
   <div class="hdr">
     <h1>Meeting</h1>
     <button class="reset" id="reset">Reset</button>
+    <span class="build" data-build>build 2026-09-05 16:45 UTC</span>
     <div class="modes" role="group" aria-label="What the stage shows">
       <button data-mode="gallery" aria-pressed="true"><svg><use href="#i-grid"/></svg>Gallery</button>
       <button data-mode="share" aria-pressed="false"><svg><use href="#i-desk"/></svg>Screen</button>

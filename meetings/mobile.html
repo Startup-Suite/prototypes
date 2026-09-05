@@ -15,7 +15,8 @@ button{font:inherit;color:inherit;background:none;border:none;padding:0;cursor:p
 @media(max-width:430px){body{display:block}.ph{width:100vw;height:100dvh;border:0;border-radius:0}}
 .scr{position:absolute;inset:0;display:none;flex-direction:column;padding:16px 14px}
 .scr.on{display:flex}
-.h1{font-size:22px;font-weight:800;margin:6px 0 12px}
+.h1{font-size:22px;font-weight:800;margin:6px 0 2px}
+.build{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:9.5px;color:var(--fnt);margin-bottom:12px}
 .seg{display:flex;gap:3px;background:#0f131b;border:1px solid var(--b3);border-radius:11px;padding:3px;margin-bottom:14px}
 .seg button{flex:1;text-align:center;font-size:12px;padding:7px 0;border-radius:8px;color:var(--mut)}
 .seg button[aria-pressed=true]{background:var(--b3);color:var(--fg);font-weight:700}
@@ -179,6 +180,7 @@ button{font:inherit;color:inherit;background:none;border:none;padding:0;cursor:p
   <!-- INDEX -->
   <section class="scr on" data-s="index">
     <div class="h1">Meetings</div>
+    <div class="build" data-build>build 2026-09-05 16:45 UTC</div>
     <div class="seg"><button aria-pressed="true">Upcoming</button><button aria-pressed="false">Past</button></div>
     <button class="mr live" data-go="lobby">
       <div class="mt">NOW</div><div class="mn">Product sync</div>
