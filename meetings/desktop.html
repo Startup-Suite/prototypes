@@ -196,15 +196,44 @@ svg{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-l
 .chip .aring{width:16px;height:16px}
 .faces{position:absolute;right:12px;top:12px;bottom:12px;width:96px;display:flex;flex-direction:column;gap:7px}
 .faces b{flex:1;background:#12161f;border:1px solid var(--base-300);border-radius:var(--r-field);display:grid;place-items:center;font-size:10px;color:var(--faint);font-weight:500}
-.expl{position:absolute;left:0;top:0;bottom:0;width:186px;border-right:1px solid var(--base-300);background:#12161f;overflow:auto;padding:8px 6px}
-.expl .cvrow{display:flex;align-items:center;gap:7px;padding:6px 8px;border-radius:8px;font-size:11.5px;color:var(--muted);width:100%}
-.expl .cvrow svg{width:14px;height:14px;flex:none}
-.expl .cvrow.on{background:var(--base-300);color:var(--content);font-weight:600}
-.expl .cvrow:hover{color:var(--content)}
-.expl .cvrow.kid{padding-left:20px}
-.expl .cvrow em{font-style:normal;margin-left:auto;font-size:9px;color:var(--info)}
-.expl .gl{padding:9px 8px 5px;font-size:9px;letter-spacing:.11em;text-transform:uppercase;color:var(--faint)}
-.stage.canvasmode .doc{left:186px}
+.expl{position:absolute;left:0;top:0;bottom:0;width:238px;border-right:1px solid var(--base-300);background:#12161f;
+  display:flex;flex-direction:column;min-height:0}
+.expl .find{padding:8px;border-bottom:1px solid var(--base-300);flex:none;position:relative}
+.expl .find input{width:100%;background:#0f131b;border:1px solid var(--base-300);border-radius:var(--r-field);
+  padding:6px 24px 6px 9px;font:inherit;font-size:11.5px;color:var(--content)}
+.expl .find input::placeholder{color:var(--faint)}
+.expl .find input:focus{outline:none;border-color:var(--primary)}
+.expl .clr{position:absolute;right:15px;top:50%;transform:translateY(-50%);color:var(--faint);font-size:13px;padding:2px 4px}
+.expl .clr:hover{color:var(--content)}
+.expl .list{flex:1;overflow:auto;padding:5px 5px 10px;min-height:0}
+.expl .foot{flex:none;border-top:1px solid var(--base-300);padding:6px 9px;font-size:9.5px;color:var(--faint);
+  font-family:var(--mono);display:flex;gap:6px;align-items:center}
+.cvrow{display:flex;align-items:center;gap:7px;padding:5px 8px;border-radius:8px;font-size:11.5px;color:var(--muted);width:100%;text-align:left}
+.cvrow svg{width:13px;height:13px;flex:none}
+.cvrow .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cvrow.on{background:var(--base-300);color:var(--content);font-weight:600}
+.cvrow:hover{color:var(--content);background:rgba(255,255,255,.03)}
+.cvrow.kid{padding-left:22px}
+.cvrow .tw{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.cvrow.two{align-items:flex-start;padding-top:6px;padding-bottom:6px}
+.cvrow.two svg{margin-top:2px}
+.cvrow .sub{font-size:9.5px;color:var(--faint);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cvrow.on .sub{color:var(--muted)}
+.cvrow mark{background:rgba(34,201,224,.28);color:var(--content);border-radius:2px;padding:0 1px}
+.cvrow em{font-style:normal;font-size:9px;color:var(--info);flex:none}
+.cvrow .ago{font-size:9px;color:var(--faint);flex:none;font-family:var(--mono)}
+.grp{display:flex;align-items:center;gap:6px;width:100%;padding:7px 8px 5px;font-size:9.5px;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--faint);text-align:left}
+.grp .cnt{margin-left:auto;font-family:var(--mono);letter-spacing:0;font-size:9.5px}
+.grp .chevg{width:11px;height:11px;transition:transform .18s;flex:none}
+.grp.open .chevg{transform:rotate(-90deg)}
+.grp:hover{color:var(--muted)}
+.grp.pin{color:var(--info)}
+.more{display:block;width:100%;text-align:left;padding:5px 8px 5px 22px;font-size:10.5px;color:var(--info);font-weight:600}
+.nores{padding:16px 10px;font-size:11px;line-height:1.6;color:var(--muted)}
+.nores b{color:var(--content)}
+.nores span{display:block;margin-top:7px;color:var(--faint);font-size:10.5px}
+.stage.canvasmode .doc{left:238px}
 .tabs button{display:flex;align-items:center;justify-content:center;gap:6px}
 .tabs button svg{width:14px;height:14px;flex:none}
 .rail.r{transition:width .28s cubic-bezier(.4,0,.2,1)}
@@ -259,7 +288,7 @@ svg{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-l
   <div class="hdr">
     <h1>Meeting</h1>
     <button class="reset" id="reset">Reset</button>
-    <span class="build" data-build>build 2026-09-05 16:50 UTC</span>
+    <span class="build" data-build>build 2026-09-05 17:05 UTC</span>
     <div class="modes" role="group" aria-label="What the stage shows">
       <button data-mode="gallery" aria-pressed="true"><svg><use href="#i-grid"/></svg>Gallery</button>
       <button data-mode="share" aria-pressed="false"><svg><use href="#i-desk"/></svg>Screen</button>
@@ -635,18 +664,87 @@ function drawPeople(){
       avHTML(p)+'</div>';
   }).join("");
 }
-var CANVASES = [
-  {g:"This meeting", items:[
-    {n:"Product sync notes", live:true},
-    {n:"Voice bug triage"}
-  ]},
-  {g:"Recent", items:[
-    {n:"Meetings redesign"},
-    {n:"Ask, and the card it makes"},
-    {n:"SBS phase 1 approval"}
-  ]}
+/* ---------------------------------------------------------------
+   A corpus the size of the real thing. chat_canvases in core is
+   space-scoped and FLAT: space_id, cloned_from, deleted_at, and a
+   title-only search vector. No parent_id, no folder column. So the
+   only real structure is space, task attachment, and clone lineage,
+   and this explorer groups by those rather than inventing a tree.
+   ---------------------------------------------------------------- */
+var SPACES = [
+  {id:"sbs",  n:"#Internal-Kobo-SBS", kind:"channel"},
+  {id:"play", n:"#kelly-playspace",   kind:"channel"},
+  {id:"fe",   n:"#frontend-design",   kind:"channel"},
+  {id:"gen",  n:"#general",           kind:"channel"},
+  {id:"eng",  n:"#engineering",       kind:"channel"},
+  {id:"bugs", n:"#bug-reports",       kind:"channel"},
+  {id:"t1",   n:"task 019fd02d · Files module",     kind:"exec"},
+  {id:"t2",   n:"task 01a06a20 · Prototype hosting",kind:"exec"},
+  {id:"t3",   n:"task 019e0814 · Emoji picker",     kind:"exec"},
+  {id:"t4",   n:"task 01a0459c · Meeting rail",     kind:"exec"},
+  {id:"t5",   n:"task 019db5f7 · Octavia client zero", kind:"exec"},
+  {id:"m1",   n:"meeting · Product sync",  kind:"meeting"},
+  {id:"m2",   n:"meeting · Design review", kind:"meeting"},
+  {id:"m3",   n:"meeting · Scope lock",    kind:"meeting"}
 ];
+var STEMS = [
+  "Meetings redesign","Ask card ladder","Approval flow","Phase 1 approval design",
+  "Evidence sheet","Review notes","Architecture verdict","Stage template misfire",
+  "Rail collapse behaviour","Canvas access model","Mobile parity batch","Design tokens",
+  "Banner mockups","Cold start walkthrough","Voice bug triage","TURN server notes",
+  "Roster states","Hold to ask","Screen share modes","Transcript gaps",
+  "Product sync notes","Scope cuts","Open questions","Decision log",
+  "Client zero screens","Onboarding copy","Empty states","Error states",
+  "Permission matrix","Undo semantics","Audit trail","Retention policy"
+];
+var AUTHORS = [
+  {n:"Kelly",    k:"user"},  {n:"Jordan",  k:"user"},
+  {n:"Ryan",     k:"user"},  {n:"Saru",    k:"agent"},
+  {n:"Octavius", k:"agent"}, {n:"Brosnan", k:"agent"}
+];
+var SUFFIX = ["", "", "", " (2)", " (3)", " v2", " v3", " — draft", " — final", " — superseded", " copy"];
+/* deterministic so the corpus is the same on every reload */
+var _s = 20260905;
+function rnd(){ _s = (_s * 1103515245 + 12345) & 0x7fffffff; return _s / 0x7fffffff; }
+function pick(a){ return a[Math.floor(rnd() * a.length)]; }
+
+var CANVASES = (function(){
+  var out = [], n = 0;
+  SPACES.forEach(function(sp){
+    var count = sp.kind === "channel" ? 24 + Math.floor(rnd() * 52)
+              : sp.kind === "exec"    ? 8 + Math.floor(rnd() * 22)
+              :                         3 + Math.floor(rnd() * 6);
+    for (var i = 0; i < count; i++){
+      var title = pick(STEMS) + pick(SUFFIX);
+      out.push({
+        id: "c" + (++n),
+        n: title,
+        space: sp.id,
+        days: Math.floor(rnd() * 190),
+        by: pick(AUTHORS),
+        clone: rnd() < 0.14
+      });
+    }
+  });
+  return out;
+})();
+/* what this meeting and this task have pinned — the only two lists
+   that matter while you are on a call */
+var PINNED = { meeting: [], task: [] };
+(function(){
+  var m = CANVASES.filter(function(c){ return c.space === "m1"; });
+  PINNED.meeting = m.slice(0, 2);
+  PINNED.meeting[0].n = "Product sync notes";
+  PINNED.meeting[0].live = true;
+  if (PINNED.meeting[1]) PINNED.meeting[1].n = "Voice bug triage";
+  PINNED.task = CANVASES.filter(function(c){ return c.space === "t4"; }).slice(0, 3);
+})();
+
+function ago(d){ return d === 0 ? "today" : d < 7 ? d + "d" : d < 60 ? Math.round(d/7) + "w" : Math.round(d/30) + "mo"; }
+function spaceOf(id){ return SPACES.filter(function(s){ return s.id === id; })[0]; }
+
 var openCanvas = "Product sync notes";
+var _initGroups = true;
 
 function galleryHTML(){
   return '<div class="tiles">' + PEOPLE.filter(function(p){ return p.kind === "human"; }).map(tileHTML).join("") + '</div>';
@@ -660,14 +758,67 @@ function shareHTML(){
   '<div class="faces"><b>Jordan</b><b>Ryan</b><b>Octavius</b></div>'+
   '<div class="chip"><span class="aring"></span>Ryan is sharing a screen</div>';
 }
+var query = "", openGroups = {}, shown = {}, PAGE = 12;
+
+function hi(text, q){
+  var t = esc(text);
+  if (!q) return t;
+  var i = text.toLowerCase().indexOf(q.toLowerCase());
+  if (i < 0) return t;
+  return esc(text.slice(0, i)) + "<mark>" + esc(text.slice(i, i + q.length)) + "</mark>" + esc(text.slice(i + q.length));
+}
+function rowHTML(c, kid){
+  var meta = query.trim()
+    ? '<span class="sub">'+esc(c.by.n)+(c.by.k === "agent" ? " (agent)" : "")+
+      (c.clone ? " &middot; a copy" : "")+' &middot; '+ago(c.days)+'</span>'
+    : "";
+  return '<button class="cvrow'+(kid ? " kid" : "")+(meta ? " two" : "")+(c.n === openCanvas ? " on" : "")+'" data-cv="'+esc(c.id)+'">'+
+    '<svg><use href="#i-doc"/></svg>'+
+    '<span class="tw"><span class="t">'+hi(c.n, query)+'</span>'+meta+'</span>'+
+    (c.live ? '<em>live</em>' : (meta ? "" : '<span class="ago">'+ago(c.days)+'</span>'))+
+  '</button>';
+}
+function groupHTML(key, label, items, pin){
+  var open = openGroups[key], cap = shown[key] || PAGE;
+  var head = '<button class="grp'+(open ? " open" : "")+(pin ? " pin" : "")+'" data-grp="'+esc(key)+'">'+
+    '<svg class="chevg"><use href="#i-chev"/></svg>'+esc(label)+'<span class="cnt">'+items.length+'</span></button>';
+  if (!open) return head;
+  var body = items.slice(0, cap).map(function(c){ return rowHTML(c, true); }).join("");
+  if (items.length > cap) body += '<button class="more" data-more="'+esc(key)+'">'+(items.length - cap)+' more</button>';
+  return head + body;
+}
 function canvasHTML(){
-  var rows = CANVASES.map(function(g){
-    return '<div class="gl">'+esc(g.g)+'</div>'+ g.items.map(function(it){
-      return '<button class="cvrow kid'+(it.n===openCanvas?' on':'')+'" data-cv="'+esc(it.n)+'">'+
-        '<svg><use href="#i-doc"/></svg>'+esc(it.n)+ (it.live?'<em>live</em>':'') +'</button>';
-    }).join("");
-  }).join("");
-  return '<div class="expl"><button class="cvrow"><svg><use href="#i-folder"/></svg>All canvases</button>'+rows+'</div>'+
+  var q = query.trim().toLowerCase();
+  var pool = q ? CANVASES.filter(function(c){ return c.n.toLowerCase().indexOf(q) >= 0; }) : CANVASES;
+  var html = "";
+
+  if (!q){
+    html += groupHTML("__meet", "In this meeting", PINNED.meeting, true);
+    html += groupHTML("__task", "On this task", PINNED.task, true);
+  }
+  SPACES.forEach(function(sp){
+    var items = pool.filter(function(c){ return c.space === sp.id; })
+                    .sort(function(a, b){ return a.days - b.days; });
+    if (!items.length) return;
+    html += groupHTML(sp.id, sp.n, items, false);
+  });
+
+  if (q && !pool.length){
+    html = '<div class="nores">No canvas title contains <b>'+esc(query)+'</b>.'+
+      '<span>Search covers titles only. Canvas bodies are not indexed, so a phrase inside a document will not be found here.</span></div>';
+  }
+
+  var foot = q
+    ? pool.length + " of " + CANVASES.length + " match"
+    : CANVASES.length + " canvases across " + SPACES.length + " spaces";
+
+  return '<div class="expl">'+
+      '<div class="find"><input id="cvq" placeholder="Search titles…" value="'+esc(query)+'" autocomplete="off">'+
+        (query ? '<button class="clr" id="cvclr" aria-label="Clear the search">&times;</button>' : "")+
+      '</div>'+
+      '<div class="list" id="cvlist">'+html+'</div>'+
+      '<div class="foot">'+foot+'</div>'+
+    '</div>'+
     '<div class="doc">'+
       '<div class="blk"><div class="l"></div><div class="l m"></div></div>'+
       '<div class="blk hot"><div class="l m"></div><div class="l s"></div></div>'+
@@ -676,11 +827,27 @@ function canvasHTML(){
     '</div>'+
     '<button class="jump">Octavius is writing &middot; jump to it</button>';
 }
+function redrawExplorer(keepFocus){
+  var list = document.getElementById("cvlist");
+  var top = list ? list.scrollTop : 0;
+  var st = document.getElementById("stage");
+  st.innerHTML = canvasHTML();
+  var l2 = document.getElementById("cvlist");
+  if (l2) l2.scrollTop = top;
+  if (keepFocus){
+    var i = document.getElementById("cvq");
+    if (i){ i.focus(); i.setSelectionRange(i.value.length, i.value.length); }
+  }
+}
 function setMode(m){
   document.querySelectorAll(".modes button").forEach(function(b){
     b.setAttribute("aria-pressed", String(b.dataset.mode === m));
   });
   var st = document.getElementById("stage");
+  if (m === "canvas" && _initGroups){
+    _initGroups = false;
+    openGroups.__meet = true; openGroups.__task = true;
+  }
   setRail(RAIL_DEFAULT[m]);
   st.classList.toggle("canvasmode", m === "canvas");
   st.innerHTML = m === "gallery" ? galleryHTML() : (m === "share" ? shareHTML() : canvasHTML());
@@ -710,7 +877,17 @@ document.addEventListener("click", function(e){
   var m = e.target.closest("[data-mode]");
   if (m){ setMode(m.dataset.mode); return; }
   var cv = e.target.closest("[data-cv]");
-  if (cv){ openCanvas = cv.dataset.cv; setMode("canvas"); return; }
+  if (cv){
+    var c = CANVASES.filter(function(x){ return x.id === cv.dataset.cv; })[0];
+    if (c) openCanvas = c.n;
+    redrawExplorer(false);
+    return;
+  }
+  var g = e.target.closest("[data-grp]");
+  if (g){ var k = g.dataset.grp; openGroups[k] = !openGroups[k]; redrawExplorer(false); return; }
+  var mo = e.target.closest("[data-more]");
+  if (mo){ var k2 = mo.dataset.more; shown[k2] = (shown[k2] || PAGE) + 25; redrawExplorer(false); return; }
+  if (e.target.closest("#cvclr")){ query = ""; redrawExplorer(true); return; }
   if (e.target.closest("#rtog")){ setRail(!document.getElementById("rrail").classList.contains("min")); return; }
   var t = e.target.closest("[data-tab]");
   if (t){ setTab(t.dataset.tab); setRail(false); if (t.dataset.tab === "chat") unread(false); return; }
@@ -742,6 +919,14 @@ function reply(text){
   var r = document.getElementById("rrail");
   if (r.classList.contains("min") || document.getElementById("thread").hidden) unread(true);
 }
+document.addEventListener("input", function(e){
+  if (e.target.id !== "cvq") return;
+  query = e.target.value;
+  /* searching opens every group that has a hit, because a collapsed
+     group with matches inside it reads as no result */
+  if (query.trim()) SPACES.forEach(function(sp){ openGroups[sp.id] = true; });
+  redrawExplorer(true);
+});
 document.getElementById("comp").addEventListener("submit", function(e){
   e.preventDefault();
   var i = document.getElementById("msg");
