@@ -51,6 +51,18 @@ button{font:inherit;color:inherit;background:none;border:none;padding:0;cursor:p
 .tiles b{background:var(--b1);border:1px solid var(--b3);border-radius:11px;display:grid;place-items:center;font-size:11px;color:var(--fnt)}
 .strip{height:56px;flex:none;background:#12161f;border:1px solid var(--b3);border-radius:16px;
  display:flex;align-items:center;gap:12px;padding:0 13px;margin-top:9px;overflow-x:auto}
+.striplbl{flex:none;display:flex;align-items:center;justify-content:center;gap:6px;font-size:10.5px;color:var(--mut);margin-top:9px;transition:opacity .4s,height .4s,margin .4s;overflow:hidden;height:14px}
+.striplbl span{white-space:nowrap;line-height:14px}
+.striplbl svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.striplbl b{color:var(--fg);font-weight:700}
+.striplbl.gone{opacity:0;height:0;margin-top:0}
+.coach{position:absolute;z-index:7;background:var(--b1);border:1px solid rgba(122,162,247,.55);border-radius:12px;
+ padding:9px 12px;font-size:12px;line-height:1.45;max-width:230px;box-shadow:0 8px 26px rgba(0,0,0,.5);
+ opacity:0;transform:translateY(5px);transition:opacity .22s,transform .22s;pointer-events:none}
+.coach.on{opacity:1;transform:none}
+.coach b{color:var(--info)}
+.coach::after{content:"";position:absolute;bottom:-6px;left:var(--tipx,50%);margin-left:-6px;width:11px;height:11px;
+ background:var(--b1);border-right:1px solid rgba(122,162,247,.55);border-bottom:1px solid rgba(122,162,247,.55);transform:rotate(45deg)}
 .aw{position:relative;flex:none;display:grid;place-items:center;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .aw .rg{width:32px;height:32px}
 .aw.held .rg{box-shadow:0 0 0 6px rgba(122,162,247,.18)}
@@ -180,7 +192,9 @@ button{font:inherit;color:inherit;background:none;border:none;padding:0;cursor:p
       </div>
     </div>
     <div class="stage" id="stage"></div>
+    <div class="striplbl" id="striplbl"><svg><use href="#i-mic"/></svg><span>Press and <b>hold</b> an agent to talk to it</span></div>
     <div class="strip" id="strip"></div>
+    <div class="coach" id="coach"></div>
     <button class="bar" id="cardbar">Cards <b id="ccount">1</b></button>
     <div class="ctl">
       <button><svg><use href="#i-mic"/></svg></button>
@@ -240,7 +254,7 @@ button{font:inherit;color:inherit;background:none;border:none;padding:0;cursor:p
 <script>
 var AGENTS=[{id:'oc',n:'Octavius',cls:'ok'},{id:'sa',n:'Saru',cls:'ok'},{id:'br',n:'Brosnan',cls:'bad'}];
 var PHRASES=['file a ticket for','the voice bug','so the reporting side','stops dropping frames'];
-var HOLD_MIN=2000, cards=[], seq=0;
+var HOLD_MIN=2000, TAP_MAX=380, cards=[], seq=0, learned=false;
 
 function $(s){return document.querySelector(s)}
 function $$(s){return [].slice.call(document.querySelectorAll(s))}
@@ -250,7 +264,7 @@ function go(name){
   $$('.scr').forEach(function(s){s.classList.toggle('on',s.dataset.s===name)});
   closeSheet();
   if(name==='call'){setMode('gallery')}
-  if(name==='index'){cards=[];seq=0;renderCards()}
+  if(name==='index'){cards=[];seq=0;learned=false;$('#striplbl').classList.remove('gone');renderCards()}
 }
 $$('[data-go]').forEach(function(b){b.addEventListener('click',function(){go(b.dataset.go)})});
 
@@ -304,7 +318,7 @@ function drawStrip(){
 }
 
 /* ---- hold to ask ---- */
-var timer=null, tick=null, start=0, said=[], target=null;
+var timer=null, tick=null, showT=null, start=0, said=[], target=null;
 
 function bindHold(el,a){
   el.addEventListener('pointerdown',function(e){e.preventDefault();try{el.setPointerCapture(e.pointerId)}catch(err){}beginAsk(el,a)});
@@ -316,9 +330,10 @@ function bindHold(el,a){
   el.addEventListener('keyup',function(e){if(e.key===' '){e.preventDefault();endAsk()}});
 }
 
+var el0=null;
 function beginAsk(el,a){
   if(target)return;
-  target=a; el.classList.add('held');
+  target=a; el0=el; el.classList.add('held');
   said=[]; start=Date.now();
   $('#who').textContent='Asking '+a.n;
   $('#said').innerHTML='<p class="idle">listening&hellip;</p>';
@@ -331,7 +346,8 @@ function beginAsk(el,a){
     i.className='rg '+x.cls+(x.id===a.id?'':' dim');
     strip.appendChild(i);
   });
-  $('#ask').classList.add('on');
+  clearTimeout(showT);
+  showT=setTimeout(function(){$('#ask').classList.add('on')},180);
   var n=0;
   timer=setInterval(function(){
     if(n>=PHRASES.length)return;
@@ -353,13 +369,19 @@ function endAsk(){
   var held=Date.now()-start, who=target.n, text=said.slice().reverse().join(' ');
   clearInterval(timer); clearInterval(tick);
   timer=tick=null; target=null;
+  clearTimeout(showT);
   $$('.aw').forEach(function(w){w.classList.remove('held')});
   $('#ask').classList.remove('on');
+  if(held<TAP_MAX){
+    coach(el0,'<b>Hold</b> it down and talk. Let go when you are done.');
+    return;
+  }
   if(held<HOLD_MIN||!text){
     addCard({state:'dead',title:'“'+(text||'…')+'”',by:'Not an action · '+(held/1000).toFixed(1)+'s of speech',undo:true});
   }else{
     var c=addCard({state:'',title:text,by:who+' · heard it',stage:'1 · heard'});
     climb(c,who);
+    if(!learned){learned=true;$('#striplbl').classList.add('gone')}
   }
   peek();
 }
@@ -398,6 +420,19 @@ function renderCards(){
       renderCards(); climb(c,'Octavius');
     });
   });
+}
+var coachT=null;
+function coach(anchor,html){
+  var c=$('#coach'), ph=$('.ph').getBoundingClientRect();
+  c.innerHTML=html; c.classList.add('on');
+  var a=anchor.getBoundingClientRect(), w=c.offsetWidth;
+  var cx=a.left+a.width/2-ph.left;
+  var left=Math.max(12,Math.min(ph.width-w-12,cx-w/2));
+  c.style.left=left+'px';
+  c.style.top=(a.top-ph.top-c.offsetHeight-10)+'px';
+  c.style.setProperty('--tipx',(cx-left)+'px');
+  clearTimeout(coachT);
+  coachT=setTimeout(function(){c.classList.remove('on')},3200);
 }
 function peek(){
   var b=$('#cardbar');

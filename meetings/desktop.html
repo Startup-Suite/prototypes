@@ -206,6 +206,17 @@ svg{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-l
 .lbl2{font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);margin-bottom:9px}
 .warnb{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.4);border-radius:var(--r-field);padding:10px 12px;font-size:11.5px;line-height:1.6;color:#f5b544;margin-top:10px}
 .inv{cursor:pointer}
+.holdhint{padding:0 12px 8px;font-size:10.5px;color:var(--muted);display:flex;align-items:flex-start;gap:6px;line-height:1.45;transition:opacity .4s,height .4s,padding .4s;overflow:hidden}
+.holdhint svg{width:12px;height:12px;flex:none;margin-top:2px}
+.holdhint b{color:var(--content)}
+.holdhint.gone{opacity:0;height:0;padding-bottom:0}
+.coach{position:fixed;z-index:40;background:var(--base-100);border:1px solid rgba(122,162,247,.55);border-radius:var(--r-field);
+  padding:9px 12px;font-size:11.5px;line-height:1.45;max-width:236px;box-shadow:0 8px 26px rgba(0,0,0,.55);
+  opacity:0;transform:translateY(5px);transition:opacity .22s,transform .22s;pointer-events:none}
+.coach.on{opacity:1;transform:none}
+.coach b{color:var(--info)}
+.coach::after{content:"";position:absolute;left:-6px;top:var(--tipy,16px);width:11px;height:11px;background:var(--base-100);
+  border-left:1px solid rgba(122,162,247,.55);border-bottom:1px solid rgba(122,162,247,.55);transform:rotate(45deg)}
 </style>
 
 <div class="page">
@@ -231,6 +242,7 @@ svg{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-l
       <div class="cards" id="cards"></div>
       <div class="sep"></div>
       <div class="lbl">In the room</div>
+      <div class="holdhint" id="holdhint"><svg><use href="#i-mic"/></svg><span>Press and <b>hold</b> Ask to talk to an agent. Let go when you are done.</span></div>
       <div class="agents" id="agents"></div>
     </div>
 
@@ -288,6 +300,8 @@ svg{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-l
     <button class="reset" id="back">Back to the room</button>
   </section>
 </div>
+
+<div class="coach" id="coach"></div>
 
 <svg style="display:none">
   <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.6"/></symbol>
@@ -401,7 +415,14 @@ function endAsk(){
   h.btn.classList.remove("held");
 
   var ms = Date.now() - h.t0;
+  if (ms < 380){
+    document.getElementById("room").classList.remove("asking");
+    document.getElementById("centre").innerHTML = "";
+    coach(h.btn, "<b>Hold</b> it down and talk. Let go when you are done.");
+    return;
+  }
   var good = ms >= 2000 && h.spoken >= 2;
+  if (good) document.getElementById("holdhint").classList.add("gone");
   var draft = document.getElementById("draft");
 
   if (draft) draft.classList.add(good ? "flyout" : "crumble");
@@ -412,6 +433,19 @@ function endAsk(){
     if (good) landGood(h);
     else landRefused(h, ms);
   }, good ? 430 : 540);
+}
+
+var coachT = null;
+function coach(anchor, html){
+  var c = document.getElementById("coach");
+  c.innerHTML = html; c.classList.add("on");
+  var a = anchor.getBoundingClientRect();
+  var top = Math.max(8, Math.min(window.innerHeight - c.offsetHeight - 8, a.top + a.height/2 - 20));
+  c.style.left = (a.right + 10) + "px";
+  c.style.top = top + "px";
+  c.style.setProperty("--tipy", (a.top + a.height/2 - top - 5) + "px");
+  clearTimeout(coachT);
+  coachT = setTimeout(function(){ c.classList.remove("on"); }, 3200);
 }
 
 /* ---------- the card climbs, or it does not ---------- */
@@ -506,7 +540,7 @@ function wireAsk(){
 document.addEventListener("click", function(e){
   var u = e.target.closest("[data-undo]");
   if (u) undo(u.dataset.undo);
-  if (e.target.id === "reset"){ clearTimers(); cards = seed(); paint(); }
+  if (e.target.id === "reset"){ clearTimers(); cards = seed(); paint(); document.getElementById("holdhint").classList.remove("gone"); }
 });
 window.addEventListener("blur", function(){ if (held) endAsk(); });
 
