@@ -298,13 +298,52 @@ svg{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-l
 .coach b{color:var(--info)}
 .coach::after{content:"";position:absolute;left:-6px;top:var(--tipy,16px);width:11px;height:11px;background:var(--base-100);
   border-left:1px solid rgba(122,162,247,.55);border-bottom:1px solid rgba(122,162,247,.55);transform:rotate(45deg)}
+
+/* ---- added: the 30s window, correction, captions, recording ---- */
+.card.armed{border-color:rgba(122,162,247,.55)}
+.cd{margin-top:9px;padding-top:8px;border-top:1px solid var(--base-300)}
+.cdbar{height:3px;border-radius:2px;background:var(--base-300);overflow:hidden;margin-bottom:7px}
+.cdbar i{display:block;height:100%;background:var(--info);transition:width .25s linear}
+.card.last .cdbar i{background:var(--warning,#f59e0b)}
+.cdrow{display:flex;align-items:center;gap:6px}
+.cdn{flex:1;font-size:10.5px;color:var(--muted);font-family:var(--mono)}
+.cdn b{color:var(--content);font-weight:700}
+.card.last .cdn b{color:#f5b544}
+.card.last .cdn{color:#f5b544}
+.cdb{width:23px;height:23px;border-radius:6px;border:1px solid var(--base-300);display:grid;place-items:center;color:var(--muted);flex:none}
+.cdb:hover{color:var(--content);border-color:var(--primary)}
+.cdb svg{width:12px;height:12px}
+.cdb.stop:hover{border-color:var(--error);color:#ff9b9b}
+.fix{margin-top:8px;padding:8px;border-radius:var(--r-field);background:#0f131b;border:1px solid var(--base-300)}
+.fixl{font-size:10px;color:var(--faint);line-height:1.5;margin-bottom:7px}
+.fixb{display:flex;flex-wrap:wrap;gap:5px}
+.fixb button{font-size:10.5px;border:1px solid var(--base-300);border-radius:999px;padding:4px 9px;color:var(--muted)}
+.fixb button:hover{border-color:var(--primary);color:var(--content)}
+.fixb button.no{border-color:rgba(239,68,68,.4);color:#ff9b9b}
+.outk{font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);border:1px solid var(--base-300);
+  border-radius:5px;padding:1px 5px;margin-left:auto;flex:none}
+.card .hd{display:flex;gap:8px;align-items:flex-start}
+.rec{display:flex;align-items:center;gap:5px;font-size:10.5px;color:#ff9b9b;border:1px solid rgba(239,68,68,.4);
+  border-radius:999px;padding:3px 9px;align-self:center}
+.rec i{width:6px;height:6px;border-radius:50%;background:var(--error);animation:pl 1.6s infinite}
+.caps{position:absolute;left:14px;right:14px;bottom:12px;background:rgba(5,7,10,.82);border-radius:var(--r-field);
+  padding:9px 12px;font-size:12.5px;line-height:1.55;color:rgba(242,243,245,.92);pointer-events:none}
+.caps .w{color:var(--faint)}
+.caps b{color:var(--primary);font-weight:700;margin-right:6px}
+.tdown{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.4);border-radius:var(--r-field);
+  padding:8px 11px;font-size:11px;line-height:1.55;color:#f5b544;margin:0 9px 8px}
+.dev{font-size:10px;color:var(--faint);border:1px dashed var(--base-300);border-radius:var(--r-field);padding:4px 9px;align-self:center}
+.dev:hover{color:var(--muted);border-color:var(--muted)}
+.dev.on{color:#f5b544;border-color:rgba(245,158,11,.5);border-style:solid}
 </style>
 
 <div class="page">
   <div class="hdr">
     <h1>Meeting</h1>
     <button class="reset" id="reset">Reset</button>
-    <span class="build" data-build>build 2026-09-05 17:11 UTC</span>
+    <span class="build" data-build>build 2026-09-05 17:34 UTC</span>
+    <span class="rec" title="meeting_recordings: recording"><i></i>Recording</span>
+    <button class="dev" id="tdown" title="Flip this to see what a hold does with no transcript">transcriber: up</button>
     <div class="modes" role="group" aria-label="What the stage shows">
       <button data-mode="gallery" aria-pressed="true"><svg><use href="#i-grid"/></svg>Gallery</button>
       <button data-mode="share" aria-pressed="false"><svg><use href="#i-desk"/></svg>Screen</button>
@@ -321,6 +360,7 @@ svg{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-l
     <!-- LEFT: cards on top, agents below -->
     <div class="rail left">
       <div class="lbl">Cards <span class="n" id="ccount">1</span></div>
+      <div id="tdownbar"></div>
       <div class="cards" id="cards"></div>
       <div class="sep"></div>
       <div class="lbl">In the room</div>
@@ -334,6 +374,7 @@ svg{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-l
         <button class="cbtn" data-tog="mic" aria-pressed="false"><svg><use href="#i-mic"/></svg><span>Mute</span></button>
         <button class="cbtn" data-tog="cam" aria-pressed="false"><svg><use href="#i-cam"/></svg><span>Camera</span></button>
         <button class="cbtn" data-mode="share"><svg><use href="#i-desk"/></svg>Share</button>
+        <button class="cbtn" id="capstog"><svg><use href="#i-cc"/></svg>Captions</button>
         <button class="cbtn leave" id="leave"><svg><use href="#i-door"/></svg>Leave</button>
       </div>
     </div>
@@ -392,6 +433,9 @@ svg{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-l
   <symbol id="i-people" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.4"/><path d="M2.8 19.5c0-3.4 2.8-5.4 6.2-5.4s6.2 2 6.2 5.4"/><path d="M16.2 5.2a3.4 3.4 0 0 1 0 6.6M17.6 14.6c2.3.5 3.8 2.3 3.8 4.9"/></symbol>
   <symbol id="i-text" viewBox="0 0 24 24"><path d="M4.5 6.5h15M4.5 12h15M4.5 17.5h9"/></symbol>
   <symbol id="i-door" viewBox="0 0 24 24"><path d="M14 4H6.5A2.5 2.5 0 0 0 4 6.5v11A2.5 2.5 0 0 0 6.5 20H14"/><path d="M17 8.5l3.5 3.5-3.5 3.5M20 12h-9"/></symbol>
+  <symbol id="i-pencil" viewBox="0 0 24 24"><path d="M4 20l.9-4.2L16.2 4.5a2 2 0 0 1 2.8 2.8L7.7 18.6z"/><path d="M14.5 6.5l3 3"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-cc" viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M10 10.2a2.6 2.6 0 1 0 0 3.6M17.5 10.2a2.6 2.6 0 1 0 0 3.6"/></symbol>
   <symbol id="i-find" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.4 15.4L20.5 20.5"/></symbol>
   <symbol id="i-chev" viewBox="0 0 24 24"><path d="M14.5 5.5L8 12l6.5 6.5"/></symbol>
   <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3.5 6.5A1.5 1.5 0 0 1 5 5h4l2 2.5h8A1.5 1.5 0 0 1 20.5 9v8.5A1.5 1.5 0 0 1 19 19H5a1.5 1.5 0 0 1-1.5-1.5z"/></symbol>
@@ -411,7 +455,7 @@ var PHRASES = [
   "and put it on tonight's list",
   "assign it to whoever picks up meetings"
 ];
-var seq = 0, cards = [], held = null, timers = [];
+var seq = 0, cards = [], held = null, timers = [], transcribing = true, captions = false;
 
 function el(h){var d=document.createElement("div");d.innerHTML=h.trim();return d.firstChild;}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];});}
@@ -538,6 +582,7 @@ function paint(){
   cards.forEach(function(c){ box.appendChild(renderCard(c)); });
   var live = cards.filter(function(c){ return c.stage !== "closed"; }).length;
   document.getElementById("ccount").textContent = live;
+  drawTDown();
 }
 
 function renderCard(c){
@@ -552,17 +597,34 @@ function renderCard(c){
       '<li class="live"><i></i>Checking for a duplicate</li></ul></div>');
   }
   if (c.stage === "shape"){
-    return el('<div class="card shape" data-card="'+c.id+'"><div class="st">3 &middot; taking shape</div>'+
+    var left = Math.max(0, Math.ceil((c.deadline - Date.now()) / 1000));
+    var last = left <= 5;
+    var pct = Math.max(0, Math.min(100, (left / COUNTDOWN) * 100));
+    return el('<div class="card shape armed'+(last ? " last" : "")+'" data-card="'+c.id+'">'+
+      '<div class="st">3 &middot; taking shape<span class="outk">'+(c.outcome === "artifact" ? "canvas" : "task")+'</span></div>'+
       '<div class="hd"><span class="avat" style="background:'+c.tint+'">'+c.init+'</span>'+
-      '<div><div class="ttl">'+esc(c.title)+'</div><div class="by">'+esc(c.agent)+' &middot; drafting</div></div></div></div>');
+      '<div><div class="ttl">'+esc(c.title)+'</div><div class="by">'+esc(c.agent)+' &middot; will create a '+(c.outcome === "artifact" ? "canvas" : "task")+'</div></div></div>'+
+      '<div class="cd"><div class="cdbar"><i style="width:'+pct+'%"></i></div>'+
+        '<div class="cdrow"><span class="cdn">acts in <b>'+left+'s</b></span>'+
+          '<button class="cdb" data-fix="'+c.id+'" aria-label="Correct this card"><svg><use href="#i-pencil"/></svg></button>'+
+          '<button class="cdb stop" data-stop="'+c.id+'" aria-label="Stop this card"><svg><use href="#i-x"/></svg></button>'+
+        '</div>'+
+        (c.fixing ? '<div class="fix"><div class="fixl">Whatever you pick here is kept as an example and the classifier reads it back. Correcting is worth more than stopping.</div>'+
+          '<div class="fixb">'+
+            AGENTS.filter(function(a){ return a.name !== c.agent && a.state !== "err"; }).map(function(a){
+              return '<button data-reassign="'+c.id+':'+a.id+'">Send to '+esc(a.name)+'</button>';
+            }).join("")+
+            '<button data-flip="'+c.id+'">Make it a '+(c.outcome === "artifact" ? "task" : "canvas")+'</button>'+
+            '<button class="no" data-notaction="'+c.id+'">Not an action</button>'+
+          '</div></div>' : "")+
+      '</div></div>');
   }
   if (c.stage === "acting"){
-    return el('<div class="card act" data-card="'+c.id+'"><div class="st">4 &middot; acting</div>'+
+    return el('<div class="card act" data-card="'+c.id+'"><div class="st">4 &middot; acting'+
+      '<span class="outk">'+(c.outcome === "artifact" ? "canvas" : "task")+'</span></div>'+
       '<div class="hd"><span class="avat" style="background:'+c.tint+'">'+c.init+'</span>'+
-      '<div><div class="ttl">'+esc(c.title)+'</div><div class="by">'+esc(c.agent)+' &middot; task created</div></div></div>'+
-      '<div class="foot"><span class="ring"><svg viewBox="0 0 36 36" width="26" height="26">'+
-      '<circle class="trk" cx="18" cy="18" r="12"></circle><circle class="prg" cx="18" cy="18" r="12"></circle></svg></span>'+
-      '<span class="t">Starting shortly &mdash; tap to stop</span></div></div>');
+      '<div><div class="ttl">'+esc(c.title)+'</div><div class="by">'+esc(c.agent)+' &middot; '+
+      (c.outcome === "artifact" ? "canvas created" : "task created")+'</div></div></div></div>');
   }
   // closed
   return el('<div class="card dead" data-card="'+c.id+'">'+
@@ -572,17 +634,59 @@ function renderCard(c){
     '</div></div></div>');
 }
 
+/* Jordan pinned this at 30 seconds, global, on 2026-08-27.
+   Platform.Meetings.Countdown holds the number; Candidates.graduate/2
+   fires at the end of it and creates the task or the canvas. This is
+   the whole safety model, so the prototype runs the real 30. */
+var COUNTDOWN = 30;
+var OUTCOMES = ["task", "task", "artifact"];
+
 function landGood(h){
+  if (!transcribing){ landDeaf(h); return; }
   var c = {
     id: "c" + (++seq), stage: "heard", agent: h.agent.name, init: h.agent.init, tint: h.agent.tint,
     rough: "Something about the voice bug…",
-    title: "File a ticket for the voice bug"
+    title: "File a ticket for the voice bug",
+    outcome: OUTCOMES[seq % OUTCOMES.length]
   };
   cards.unshift(c); paint();
   later(function(){ c.stage = "thinking"; paint(); }, 900);
-  later(function(){ c.stage = "shape";    paint(); }, 2600);
-  later(function(){ c.stage = "acting";   paint(); }, 4300);
+  later(function(){
+    c.stage = "shape";
+    c.deadline = Date.now() + COUNTDOWN * 1000;
+    paint();
+  }, 2600);
 }
+
+/* push-to-talk touches no audio: PressWindow is a marker laid over the
+   transcript stream. No transcriber, no words, and the card knows it. */
+function landDeaf(h){
+  var c = {
+    id: "c" + (++seq), stage: "closed", undoable: false,
+    agent: h.agent.name, init: h.agent.init, tint: h.agent.tint,
+    title: "\u2014",
+    reason: "Held for " + Math.round((Date.now() - h.t0) / 1000) + "s, but no transcript arrived"
+  };
+  cards.unshift(c); paint();
+}
+
+/* one ticker for every armed card: N sit open per meeting, and the
+   cursor only gates dispatch, so concurrent countdowns are normal */
+setInterval(function(){
+  var armed = cards.filter(function(c){ return c.stage === "shape" && c.deadline; });
+  if (!armed.length) return;
+  var graduated = false;
+  armed.forEach(function(c){
+    var left = Math.max(0, Math.ceil((c.deadline - Date.now()) / 1000));
+    if (left <= 0){ c.stage = "acting"; c.deadline = null; c.fixing = false; graduated = true; return; }
+    var node = cardEl(c.id); if (!node) return;
+    var n = node.querySelector(".cdn b"), bar = node.querySelector(".cdbar i");
+    if (n) n.textContent = left + "s";
+    if (bar) bar.style.width = (left / COUNTDOWN * 100) + "%";
+    node.classList.toggle("last", left <= 5);
+  });
+  if (graduated) paint();
+}, 250);
 
 function landRefused(h, ms){
   var secs = Math.max(1, Math.round(ms / 1000));
@@ -618,7 +722,88 @@ function wireAsk(){
     btn.addEventListener("keyup", function(e){ if (e.key === " " || e.key === "Enter") endAsk(); });
   });
 }
+var CAPS = [
+  {w:"Ryan", t:"so the reporting side stops dropping frames"},
+  {w:"Octavius", t:"audio plays fine, only the reporting is broken"},
+  {w:"Jordan", t:"ok that is the good version"}
+];
+var capi = 0, capTimer = null;
+function drawCaptions(){
+  var b = document.getElementById("capstog");
+  if (b) b.classList.toggle("on", captions);
+  var prev = document.querySelector(".caps");
+  if (prev) prev.remove();
+  clearInterval(capTimer); capTimer = null;
+  if (!captions) return;
+  var node = el('<div class="caps"></div>');
+  document.getElementById("stage").appendChild(node);
+  var tick = function(){
+    var c = CAPS[capi % CAPS.length]; capi++;
+    node.innerHTML = transcribing
+      ? '<b>'+esc(c.w)+'</b>'+esc(c.t)
+      : '<span class="w">no transcript is arriving</span>';
+  };
+  tick(); capTimer = setInterval(tick, 3200);
+}
+function drawTDown(){
+  var box = document.getElementById("tdownbar");
+  if (!box) return;
+  box.innerHTML = transcribing ? "" :
+    '<div class="tdown">No transcript is arriving. Holding an agent still opens a card and the card will have nothing in it. Push-to-talk is a marker over the transcript stream, not a recorder.</div>';
+}
+function card(id){ return cards.filter(function(c){ return c.id === id; })[0]; }
 document.addEventListener("click", function(e){
+  var st = e.target.closest("[data-stop]");
+  if (st){
+    var c = card(st.dataset.stop);
+    if (c){ c.stage = "closed"; c.deadline = null; c.fixing = false; c.undoable = true;
+            c.reason = "Stopped before it acted \u00b7 retracted"; paint(); }
+    return;
+  }
+  var fx = e.target.closest("[data-fix]");
+  if (fx){
+    var c2 = card(fx.dataset.fix);
+    if (c2){
+      c2.fixing = !c2.fixing;
+      paint();
+      /* the panel is taller than the card, and the rail scrolls */
+      if (c2.fixing){ var n = cardEl(c2.id); if (n) n.scrollIntoView({block:"nearest"}); }
+    }
+    return;
+  }
+  var ra = e.target.closest("[data-reassign]");
+  if (ra){
+    var parts = ra.dataset.reassign.split(":"), c3 = card(parts[0]);
+    var a = AGENTS.filter(function(x){ return x.id === parts[1]; })[0];
+    if (c3 && a){
+      c3.agent = a.name; c3.init = a.init; c3.tint = a.tint; c3.fixing = false;
+      c3.deadline = Date.now() + COUNTDOWN * 1000;   /* re-arm: you changed it, you get the window back */
+      paint();
+    }
+    return;
+  }
+  var fl = e.target.closest("[data-flip]");
+  if (fl){
+    var c4 = card(fl.dataset.flip);
+    if (c4){ c4.outcome = c4.outcome === "artifact" ? "task" : "artifact"; c4.fixing = false;
+             c4.deadline = Date.now() + COUNTDOWN * 1000; paint(); }
+    return;
+  }
+  var na = e.target.closest("[data-notaction]");
+  if (na){
+    var c5 = card(na.dataset.notaction);
+    if (c5){ c5.stage = "closed"; c5.deadline = null; c5.fixing = false; c5.undoable = true;
+             c5.reason = "You said it was not an action \u00b7 kept as an example"; paint(); }
+    return;
+  }
+  if (e.target.closest("#tdown")){
+    transcribing = !transcribing;
+    e.target.closest("#tdown").classList.toggle("on", !transcribing);
+    e.target.closest("#tdown").textContent = transcribing ? "transcriber: up" : "transcriber: DOWN";
+    paint();
+    return;
+  }
+  if (e.target.closest("#capstog")){ captions = !captions; drawCaptions(); return; }
   var u = e.target.closest("[data-undo]");
   if (u) undo(u.dataset.undo);
   if (e.target.id === "reset"){ clearTimers(); cards = seed(); paint(); document.getElementById("holdhint").classList.remove("gone"); }
@@ -627,7 +812,7 @@ window.addEventListener("blur", function(){ if (held) endAsk(); });
 
 function seed(){
   return [{ id:"c0", stage:"acting", agent:"Octavius", init:"O", tint:"#7aa2f7",
-            title:"Check TURN on the media server" }];
+            outcome:"task", title:"Check TURN on the media server" }];
 }
 
 renderAgents();
@@ -877,6 +1062,7 @@ function setMode(m){
   st.classList.toggle("canvasmode", m === "canvas");
   st.classList.toggle("explmin", m === "canvas" && explMin);
   st.innerHTML = m === "gallery" ? galleryHTML() : (m === "share" ? shareHTML() : canvasHTML());
+  if (captions) drawCaptions();
   var d = document.getElementById("cvdot");
   if (d && m === "canvas") d.style.display = "none";
 }
@@ -968,6 +1154,7 @@ document.getElementById("comp").addEventListener("submit", function(e){
 });
 
 drawPeople();
+drawTDown();
 setMode("gallery");
 setTab("chat");
 </script>
