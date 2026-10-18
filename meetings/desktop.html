@@ -388,8 +388,8 @@ svg{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-l
         <button class="rtog" id="rtog" aria-label="Collapse the panel" aria-expanded="true"><svg><use href="#i-chev"/></svg></button>
       </div>
       <div class="thread" id="thread" data-pane="chat">
-        <p><span class="who">Octavius</span> audio plays fine, only the reporting is broken</p>
-        <p><span class="who">Jordan</span> ok that's the good version</p>
+        <p><span class="who">Agent One</span> audio plays fine, only the reporting is broken</p>
+        <p><span class="who">Morgan</span> ok that's the good version</p>
       </div>
       <div class="thread" id="people" data-pane="people" hidden></div>
       <div class="thread" id="script" data-pane="script" hidden>
@@ -407,7 +407,7 @@ svg{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-l
     <div class="cols">
       <div>
         <div class="lbl2">Became tasks</div>
-        <div class="card act"><div class="ttl">File a ticket for the voice bug</div><div class="by">Octavius &middot; created</div></div>
+        <div class="card act"><div class="ttl">File a ticket for the voice bug</div><div class="by">Agent One &middot; created</div></div>
         <div class="card act"><div class="ttl">Check TURN on the media server</div><div class="by">unassigned</div></div>
       </div>
       <div>
@@ -446,9 +446,9 @@ svg{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-l
 <script>
 "use strict";
 var AGENTS = [
-  {id:"oct", name:"Octavius", init:"O", tint:"#7aa2f7", state:"busy", word:"Thinking · 12s"},
-  {id:"sar", name:"Saru",     init:"S", tint:"#10b981", state:"idle", word:"Idle"},
-  {id:"bro", name:"Brosnan",  init:"B", tint:"#ef4444", state:"err",  word:"Couldn't · offline"}
+  {id:"a1", name:"Agent One", init:"A1", tint:"#7aa2f7", state:"busy", word:"Thinking · 12s"},
+  {id:"a2", name:"Agent Two",     init:"A2", tint:"#10b981", state:"idle", word:"Idle"},
+  {id:"a3", name:"Agent Three",  init:"A3", tint:"#ef4444", state:"err",  word:"Couldn't · offline"}
 ];
 var PHRASES = [
   "file a ticket for the voice bug",
@@ -635,7 +635,7 @@ function renderCard(c){
     '</div></div></div>');
 }
 
-/* Jordan pinned this at 30 seconds, global, on 2026-08-27.
+/* Morgan pinned this at 30 seconds, global, on 2026-08-27.
    Platform.Meetings.Countdown holds the number; Candidates.graduate/2
    fires at the end of it and creates the task or the canvas. This is
    the whole safety model, so the prototype runs the real 30. */
@@ -724,9 +724,9 @@ function wireAsk(){
   });
 }
 var CAPS = [
-  {w:"Ryan", t:"so the reporting side stops dropping frames"},
-  {w:"Octavius", t:"audio plays fine, only the reporting is broken"},
-  {w:"Jordan", t:"ok that is the good version"}
+  {w:"Avery", t:"so the reporting side stops dropping frames"},
+  {w:"Agent One", t:"audio plays fine, only the reporting is broken"},
+  {w:"Morgan", t:"ok that is the good version"}
 ];
 var capi = 0, capTimer = null;
 function drawCaptions(){
@@ -812,7 +812,7 @@ document.addEventListener("click", function(e){
 window.addEventListener("blur", function(){ if (held) endAsk(); });
 
 function seed(){
-  return [{ id:"c0", stage:"acting", agent:"Octavius", init:"O", tint:"#7aa2f7",
+  return [{ id:"c0", stage:"acting", agent:"Agent One", init:"A1", tint:"#7aa2f7",
             outcome:"task", title:"Check TURN on the media server" }];
 }
 
@@ -822,13 +822,13 @@ paint();
 
 /* ---------- added: stage modes, canvas explorer, tabs, controls, leave ---------- */
 var PEOPLE = [
-  {id:"you", n:"Jordan",   kind:"human", you:true},
-  {id:"ry",  n:"Ryan",     kind:"human", mic:true,  cam:true, speaking:true, sharing:true},
+  {id:"you", n:"Morgan",   kind:"human", you:true},
+  {id:"av",  n:"Avery",     kind:"human", mic:true,  cam:true, speaking:true, sharing:true},
   {id:"ma",  n:"Mariah",   kind:"human", mic:false, cam:true},
   {id:"ka",  n:"Katie",    kind:"human", mic:true,  cam:false},
-  {id:"oct", n:"Octavius", kind:"agent", voice:true},
-  {id:"sar", n:"Saru",     kind:"agent", voice:true},
-  {id:"bro", n:"Brosnan",  kind:"agent", voice:false}
+  {id:"a1", n:"Agent One", kind:"agent", voice:true},
+  {id:"a2", n:"Agent Two",     kind:"agent", voice:true},
+  {id:"a3", n:"Agent Three",  kind:"agent", voice:false}
 ];
 var me = {mic:true, cam:true};
 function av(p){ return p.you ? {mic:me.mic, cam:me.cam} : {mic:p.mic, cam:p.cam}; }
@@ -875,8 +875,8 @@ function drawPeople(){
    and this explorer groups by those rather than inventing a tree.
    ---------------------------------------------------------------- */
 var SPACES = [
-  {id:"sbs",  n:"#Internal-Kobo-SBS", kind:"channel"},
-  {id:"play", n:"#kelly-playspace",   kind:"channel"},
+  {id:"dr",  n:"#design-review", kind:"channel"},
+  {id:"play", n:"#playspace",   kind:"channel"},
   {id:"fe",   n:"#frontend-design",   kind:"channel"},
   {id:"gen",  n:"#general",           kind:"channel"},
   {id:"eng",  n:"#engineering",       kind:"channel"},
@@ -885,7 +885,7 @@ var SPACES = [
   {id:"t2",   n:"task 01a06a20 · Prototype hosting",kind:"exec"},
   {id:"t3",   n:"task 019e0814 · Emoji picker",     kind:"exec"},
   {id:"t4",   n:"task 01a0459c · Meeting rail",     kind:"exec"},
-  {id:"t5",   n:"task 019db5f7 · Octavia client zero", kind:"exec"},
+  {id:"t5",   n:"task 019db5f7 · Client zero onboarding", kind:"exec"},
   {id:"m1",   n:"meeting · Product sync",  kind:"meeting"},
   {id:"m2",   n:"meeting · Design review", kind:"meeting"},
   {id:"m3",   n:"meeting · Scope lock",    kind:"meeting"}
@@ -901,9 +901,9 @@ var STEMS = [
   "Permission matrix","Undo semantics","Audit trail","Retention policy"
 ];
 var AUTHORS = [
-  {n:"Kelly",    k:"user"},  {n:"Jordan",  k:"user"},
-  {n:"Ryan",     k:"user"},  {n:"Saru",    k:"agent"},
-  {n:"Octavius", k:"agent"}, {n:"Brosnan", k:"agent"}
+  {n:"Riley",    k:"user"},  {n:"Morgan",  k:"user"},
+  {n:"Avery",     k:"user"},  {n:"Agent Two",    k:"agent"},
+  {n:"Agent One", k:"agent"}, {n:"Agent Three", k:"agent"}
 ];
 var SUFFIX = ["", "", "", " (2)", " (3)", " v2", " v3", " — draft", " — final", " — superseded", " copy"];
 /* deterministic so the corpus is the same on every reload */
@@ -958,8 +958,8 @@ function shareHTML(){
     '<div class="blk"><div class="l m"></div><div class="l"></div></div>'+
     '<div class="blk"><div class="l"></div><div class="l s"></div></div>'+
   '</div>'+
-  '<div class="faces"><b>Jordan</b><b>Ryan</b><b>Octavius</b></div>'+
-  '<div class="chip"><span class="aring"></span>Ryan is sharing a screen</div>';
+  '<div class="faces"><b>Morgan</b><b>Avery</b><b>Agent One</b></div>'+
+  '<div class="chip"><span class="aring"></span>Avery is sharing a screen</div>';
 }
 var query = "", openGroups = {}, shown = {}, PAGE = 12, explMin = true;
 
@@ -1035,7 +1035,7 @@ function canvasHTML(){
       '<div class="blk"><div class="l"></div><div class="l s"></div></div>'+
       '<div class="blk"><div class="l m"></div><div class="l"></div></div>'+
     '</div>'+
-    '<button class="jump">Octavius is writing &middot; jump to it</button>';
+    '<button class="jump">Agent One is writing &middot; jump to it</button>';
 }
 function redrawExplorer(keepFocus){
   var list = document.getElementById("cvlist");
@@ -1130,7 +1130,7 @@ function unread(on){
 }
 function reply(text){
   var th = document.getElementById("thread");
-  th.appendChild(el('<p><span class="who">Octavius</span>'+esc(text)+'</p>'));
+  th.appendChild(el('<p><span class="who">Agent One</span>'+esc(text)+'</p>'));
   th.scrollTop = th.scrollHeight;
   var r = document.getElementById("rrail");
   if (r.classList.contains("min") || document.getElementById("thread").hidden) unread(true);
@@ -1148,7 +1148,7 @@ document.getElementById("comp").addEventListener("submit", function(e){
   var i = document.getElementById("msg");
   if (!i.value.trim()) return;
   var th = document.getElementById("thread");
-  th.appendChild(el('<p><span class="who">Jordan</span>'+esc(i.value.trim())+'</p>'));
+  th.appendChild(el('<p><span class="who">Morgan</span>'+esc(i.value.trim())+'</p>'));
   th.scrollTop = th.scrollHeight;
   i.value = "";
   later(function(){ reply("on it, I will put that in the notes"); }, 2200);

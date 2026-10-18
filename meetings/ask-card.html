@@ -180,8 +180,8 @@ button{font:inherit;color:inherit;background:none;border:none;padding:0;cursor:p
     <div class="rail r">
       <div class="tabs"><span class="tab on">Chat</span><span class="tab">Canvas</span><span class="tab">Transcript</span></div>
       <div class="thread">
-        <p><span class="who">Octavius</span> audio plays fine, only the reporting is broken</p>
-        <p><span class="who">Jordan</span> ok that's the good version</p>
+        <p><span class="who">Agent One</span> audio plays fine, only the reporting is broken</p>
+        <p><span class="who">Morgan</span> ok that's the good version</p>
       </div>
       <div class="comp"><div class="box">Message the room&hellip;</div></div>
     </div>
@@ -196,9 +196,9 @@ button{font:inherit;color:inherit;background:none;border:none;padding:0;cursor:p
 <script>
 "use strict";
 var AGENTS = [
-  {id:"oct", name:"Octavius", init:"O", tint:"#7aa2f7", state:"busy", word:"Thinking · 12s"},
-  {id:"sar", name:"Saru",     init:"S", tint:"#10b981", state:"idle", word:"Idle"},
-  {id:"bro", name:"Brosnan",  init:"B", tint:"#ef4444", state:"err",  word:"Couldn't · offline"}
+  {id:"a1", name:"Agent One", init:"A1", tint:"#7aa2f7", state:"busy", word:"Thinking · 12s"},
+  {id:"a2", name:"Agent Two",     init:"A2", tint:"#10b981", state:"idle", word:"Idle"},
+  {id:"a3", name:"Agent Three",  init:"A3", tint:"#ef4444", state:"err",  word:"Couldn't · offline"}
 ];
 var PHRASES = [
   "file a ticket for the voice bug",
@@ -401,7 +401,7 @@ document.addEventListener("click", function(e){
 window.addEventListener("blur", function(){ if (held) endAsk(); });
 
 function seed(){
-  return [{ id:"c0", stage:"acting", agent:"Octavius", init:"O", tint:"#7aa2f7",
+  return [{ id:"c0", stage:"acting", agent:"Agent One", init:"A1", tint:"#7aa2f7",
             title:"Check TURN on the media server" }];
 }
 

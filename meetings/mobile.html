@@ -227,7 +227,7 @@ button{font:inherit;color:inherit;background:none;border:none;padding:0;cursor:p
       <div class="av"><i class="rg"></i><i class="rg"></i><i class="rg ag"></i></div>
       <span class="jn">Join</span>
     </button>
-    <button class="mr" data-go="lobby"><div class="mt">14:00</div><div class="mn">SBS scope lock</div>
+    <button class="mr" data-go="lobby"><div class="mt">14:00</div><div class="mn">Design scope lock</div>
       <div class="av"><i class="rg"></i><i class="rg ag"></i></div></button>
     <button class="mr" data-go="lobby"><div class="mt">16:30</div><div class="mn">Design review</div>
       <div class="av"><i class="rg"></i><i class="rg"></i></div></button>
@@ -278,7 +278,7 @@ button{font:inherit;color:inherit;background:none;border:none;padding:0;cursor:p
     <div class="h1">Product sync</div>
     <div class="mt" style="margin-bottom:14px">42 min &middot; ended 18:40</div>
     <div class="sec">Became tasks</div>
-    <div class="card act"><div class="ttl">File a ticket for the voice bug</div><div class="by">Octavius &middot; created</div></div>
+    <div class="card act"><div class="ttl">File a ticket for the voice bug</div><div class="by">Agent One &middot; created</div></div>
     <div class="card act"><div class="ttl">Check TURN on the media server</div><div class="by">unassigned</div></div>
     <div class="sec">Considered, not acted on</div>
     <div class="card dead"><div class="ttl">&ldquo;file a ticket for&hellip;&rdquo;</div><div class="by">Not an action &middot; 1s of speech</div></div>
@@ -295,19 +295,19 @@ button{font:inherit;color:inherit;background:none;border:none;padding:0;cursor:p
   </div>
   <div class="sheet" id="sheet-chat">
     <div class="grab"></div><div class="sh">Chat</div>
-    <div class="msg"><b>Octavius</b> audio plays fine, only reporting is broken</div>
-    <div class="msg"><b>Jordan</b> ok that's the good version</div>
+    <div class="msg"><b>Agent One</b> audio plays fine, only reporting is broken</div>
+    <div class="msg"><b>Morgan</b> ok that's the good version</div>
     <div class="cmp">Message the room&hellip;</div>
   </div>
   <div class="sheet" id="sheet-invite">
     <div class="grab"></div><div class="sh">Add an agent</div>
     <div class="sec">Can join a call</div>
     <div class="orow"><i class="rg ok"></i><span class="nm">AgentVoice</span><em class="g">voice</em></div>
-    <div class="orow"><i class="rg ok"></i><span class="nm">Saru</span><em class="g">voice</em></div>
+    <div class="orow"><i class="rg ok"></i><span class="nm">Agent Two</span><em class="g">voice</em></div>
     <div class="sec">Never declared &mdash; may work</div>
     <div class="orow"><i class="rg"></i><span class="nm">Alfred</span><em>unknown</em></div>
     <div class="sec">No voice &mdash; text only</div>
-    <div class="orow off"><i class="rg"></i><span class="nm">Higgins</span><em>text only</em></div>
+    <div class="orow off"><i class="rg"></i><span class="nm">Agent Four</span><em>text only</em></div>
   </div>
 
   <div class="ask" id="ask">
@@ -323,22 +323,22 @@ button{font:inherit;color:inherit;background:none;border:none;padding:0;cursor:p
 </div>
 
 <script>
-var AGENTS=[{id:'oc',n:'Octavius',cls:'ok'},{id:'sa',n:'Saru',cls:'ok'},{id:'br',n:'Brosnan',cls:'bad'}];
+var AGENTS=[{id:'a1',n:'Agent One',cls:'ok'},{id:'a2',n:'Agent Two',cls:'ok'},{id:'a3',n:'Agent Three',cls:'bad'}];
 var PHRASES=['file a ticket for','the voice bug','so the reporting side','stops dropping frames'];
 var HOLD_MIN=2000, TAP_MAX=380, cards=[], seq=0, learned=false;
 var me={mic:true,cam:true};
-/* 30 seconds, global. Jordan pinned it 2026-08-27; Platform.Meetings.Countdown
+/* 30 seconds, global. Morgan pinned it 2026-08-27; Platform.Meetings.Countdown
    holds it and Candidates.graduate/2 fires at the end. */
 var COUNTDOWN=30, transcribing=true, captions=false;
 /* one model, three surfaces: gallery tiles, lobby roster, invite sheet */
 var PEOPLE=[
-  {id:'you', n:'Jordan',   kind:'human', you:true},
-  {id:'ry',  n:'Ryan',     kind:'human', mic:true,  cam:true,  speaking:true},
+  {id:'you', n:'Morgan',   kind:'human', you:true},
+  {id:'av',  n:'Avery',     kind:'human', mic:true,  cam:true,  speaking:true},
   {id:'ma',  n:'Mariah',   kind:'human', mic:false, cam:true},
   {id:'ka',  n:'Katie',    kind:'human', mic:true,  cam:false},
-  {id:'oc',  n:'Octavius', kind:'agent', voice:true},
-  {id:'sa',  n:'Saru',     kind:'agent', voice:true},
-  {id:'br',  n:'Brosnan',  kind:'agent', voice:false}
+  {id:'a1',  n:'Agent One', kind:'agent', voice:true},
+  {id:'a2',  n:'Agent Two',     kind:'agent', voice:true},
+  {id:'a3',  n:'Agent Three',  kind:'agent', voice:false}
 ];
 function av(p){ return p.you ? {mic:me.mic, cam:me.cam} : {mic:p.mic, cam:p.cam}; }
 function ic(id){ return '<svg><use href="#i-'+id+'"/></svg>'; }
@@ -435,12 +435,12 @@ var STAGE={
   },
   share:'<div class="doc" style="padding:22px"><div class="blk"><div class="l"></div><div class="l m"></div><div class="l s"></div></div>'+
         '<div class="blk"><div class="l m"></div><div class="l"></div></div></div>'+
-        '<div class="chip"><i class="rg"></i><span class="nm">Ryan is sharing</span><span style="color:var(--info);font-weight:700">Faces</span></div>',
+        '<div class="chip"><i class="rg"></i><span class="nm">Avery is sharing</span><span style="color:var(--info);font-weight:700">Faces</span></div>',
   canvas:'<div class="doc"><div class="blk"><div class="l"></div><div class="l m"></div></div>'+
          '<div class="blk hot"><div class="l m"></div><div class="l s"></div></div>'+
          '<div class="blk"><div class="l"></div><div class="l s"></div></div>'+
          '<div class="blk"><div class="l m"></div></div></div>'+
-         '<button class="jump">Octavius is writing &middot; jump to it</button>'
+         '<button class="jump">Agent One is writing &middot; jump to it</button>'
 };
 function setMode(m){
   $$('.modes button').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.mode===m))});
@@ -634,8 +634,8 @@ function renderCards(){
       var id=Number(u.dataset.undo);
       var c=cards.filter(function(x){return x.id===id})[0];
       if(!c)return;
-      c.state=''; c.undo=false; c.by='Octavius · heard it'; c.title=c.title.replace(/[“”]/g,'');
-      renderCards(); climb(c,'Octavius');
+      c.state=''; c.undo=false; c.by='Agent One · heard it'; c.title=c.title.replace(/[“”]/g,'');
+      renderCards(); climb(c,'Agent One');
     });
   });
 }
@@ -652,9 +652,9 @@ function coach(anchor,html){
   clearTimeout(coachT);
   coachT=setTimeout(function(){c.classList.remove('on')},3200);
 }
-var CAPS=[{w:'Ryan',t:'so the reporting side stops dropping frames'},
-          {w:'Octavius',t:'audio plays fine, only the reporting is broken'},
-          {w:'Jordan',t:'ok that is the good version'}];
+var CAPS=[{w:'Avery',t:'so the reporting side stops dropping frames'},
+          {w:'Agent One',t:'audio plays fine, only the reporting is broken'},
+          {w:'Morgan',t:'ok that is the good version'}];
 var capi=0,capT=null;
 function drawCaps(){
   var prev=$('.capsm'); if(prev)prev.remove();
@@ -689,7 +689,7 @@ document.addEventListener('click',function(e){
   var fl=e.target.closest('[data-flip]');
   if(fl){var c4=findCard(fl.dataset.flip);
     if(c4){c4.outcome=c4.outcome==='artifact'?'task':'artifact';c4.fixing=false;
-      c4.by=(c4.who||'Octavius')+' · will create a '+(c4.outcome==='artifact'?'canvas':'task');
+      c4.by=(c4.who||'Agent One')+' · will create a '+(c4.outcome==='artifact'?'canvas':'task');
       c4.deadline=Date.now()+COUNTDOWN*1000;renderCards()}
     return}
   var na=e.target.closest('[data-notaction]');
